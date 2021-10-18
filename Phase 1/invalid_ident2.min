@@ -1,8 +1,0 @@
-function test1;
-beginparams
-endparams
-beginlocals
-n_ : integer;
-endlocals
-beginbody
-endbody
