@@ -1,8 +1,8 @@
 DIGIT [0-9] 
-LETTERS [a-zA-Z]
 
 %{
-int currPos = 0;
+int currPos = 1;
+int currLine = 1;
 %}
 
 %%
@@ -52,9 +52,17 @@ int currPos = 0;
 "]" {printf("R_SQUARE_BRACKET\n"); currPos += yyleng;}
 ":=" {printf("ASSIGN\n"); currPos += yyleng;}
 ":" {printf("COLON\n"); currPos += yyleng;}
-{DIGIT}+ {printf("NUM %s\n", yytext); currPos += yyleng;}
-{LETTERS}+ {printf("IDENT %s\n", yytext); currPos += yyleng;}
+[ ] {currPos += yyleng;}
+[\t] {currPos += yyleng;}
+"\n" {currLine++; currPos = 1;}
+[##].* {currLine++; currPos = 1;}
 
+{DIGIT}+ {printf("NUM %s\n", yytext); currPos += yyleng;}
+
+("_"[a-zA-Z0-9_]*)|({DIGIT}[a-zA-Z0-9_]*) {printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currPos, currLine, yytext); exit(0);}
+([a-zA-Z0-9_]*"_") {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currPos, currLine, yytext); exit(0);}
+
+[a-zA-Z0-9_]*[a-zA-Z0-9]* {printf("IDENT %s\n", yytext); currPos += yyleng;}
 %%
 
 main() {
