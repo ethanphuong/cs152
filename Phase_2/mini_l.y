@@ -11,6 +11,9 @@ void yyerror(const char* s) {
 }
 %}
 
+%define parse.error verbose
+%define parse.lac full
+
 %union {
    int number;
    char* identifier;
