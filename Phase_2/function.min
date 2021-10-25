@@ -1,0 +1,21 @@
+function add;
+beginparams
+	a : integer;
+	b : integer;
+endparams
+beginlocals
+endlocals
+beginbody
+        return a + b;
+endbody
+
+function mult;
+beginparams
+	a : integer;
+	b : integer;
+endparams
+beginlocals
+endlocals
+beginbody
+        return a * b;
+endbody
