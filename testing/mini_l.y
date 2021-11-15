@@ -18,7 +18,6 @@ string declaration_string(string *s);
 void code(secondStruct &first, secondStruct second, secondStruct third, string op);
 void push(string name, Var v);
 void checks(string name);
-bool bool1 = true;
 bool bool2 = false;
 bool check(string name);
 ;
@@ -797,7 +796,6 @@ void checks(string name) {
 int yyerror(const char *s) {
     extern int line_cnt;
     extern int cursor_pos;
-    bool1 = false;
     printf(">>> Line %d, position %d: %s\n",line_cnt,cursor_pos,s);
     return -1;
 }
@@ -805,23 +803,18 @@ int yyerror(const char *s) {
 
 int main(int argc, char **argv) {
 
-    if ( (argc > 1) && (instream = fopen(argv[1],"r")) == NULL){
-        printf("syntax: %s filename\n", argv[0]);
-        return 1;
+    if (argc > 1) {
+        yyin = fopen(argv[1], "r");
+        if (yyin == NULL) {
+            printf("Syntax: %s filename\n", argv[0]);
+        }
     }
-
+    
     yyparse();
-
-    if(bool1){
-        ofstream file;
-        file.open("mil_code.mil");
-        file << mil_code->str();
-        file.close();
-    }
-    else{
-        cout << "***Errors exist, fix to compile code***" << endl;
-    }
-
-
+    ofstreaem file;
+    file.open("output.mil");
+    file << mil_code.str()
+    file.close();
+    
     return 0;
 }
