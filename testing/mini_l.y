@@ -15,14 +15,11 @@ int temp2 = 0;
 string * new_string();
 string * new_label();
 string go_to(string *s);
-string dec_label(string *s);
-string dec_temp(string *s);
+string declaration_label(string *s);
+string declaration_string(string *s);
 void expression_code( Terminal &DD,  Terminal D2, Terminal D3,string op);
 bool success = true;
 bool no_main = false;
-void push_map(string name, Var v);
-bool check_map(string name);
-void check_map_dec(string name);
 
 map<string,Var> var_map;
 stack<Loop> loop_stack;
@@ -143,7 +140,35 @@ declaration:    IDENT declarations_1 {
                     v.place = new string();
                     *v.place = $1;
                     $$.vars->push_back(v);
-                   
+                    
+                    if($2.type == INT_ARR){
+                        if($2.length <= 0){
+                            yyerror("ERROR: invalid array size 0 or less");
+                        }
+                        *($$.code) << ".[] " << $1 << ", " << $2.length << "\n";
+                        string s = $1;
+                        if(!check_map(s)){
+                            push_map(s,v);
+                        }
+                        else{
+                            string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
+                            yyerror(tmp.c_str());
+                        }
+                    }
+
+                    else if($2.type == INT){
+                        *($$.code) << ". " << $1 << "\n";
+                        string s = $1;
+                        if(!check_map(s)){
+                            push_map(s,v);
+                        }
+                        else{
+                            string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
+                            yyerror(tmp.c_str());
+                        }
+                    }else{
+                            yyerror("ERROR: invalid type");
+                    }
                 }
                 ;
 
@@ -217,7 +242,7 @@ statement:          var ASSIGN expression{
                     }
                     else if($1.type == INT_ARR && $3.type == INT_ARR){
                         string *tmp = new_string();
-                        *($$.code) << dec_temp(tmp) << print_code(tmp, "=[]", $3.place, $3.index);
+                        *($$.code) << declaration_string(tmp) << print_code(tmp, "=[]", $3.place, $3.index);
                         *($$.code) << print_code($1.value, "[]=", $1.index, tmp);
                     }
                     else{
@@ -231,21 +256,21 @@ statement:          var ASSIGN expression{
                     *($$.code) << $2.code->str() << "?:= " << *$$.begin << ", " <<  *$2.place << "\n";
                     if($5.begin != NULL){                       
                         *($$.code) << go_to($5.begin); 
-                        *($$.code) << dec_label($$.begin)  << $4.code->str() << go_to($$.end);
-                        *($$.code) << dec_label($5.begin) << $5.code->str();
+                        *($$.code) << declaration_label($$.begin)  << $4.code->str() << go_to($$.end);
+                        *($$.code) << declaration_label($5.begin) << $5.code->str();
                     }
                     else{
-                        *($$.code) << go_to($$.end)<< dec_label($$.begin)  << $4.code->str();
+                        *($$.code) << go_to($$.end)<< declaration_label($$.begin)  << $4.code->str();
                     }
-                    *($$.code) << dec_label($$.end);
+                    *($$.code) << declaration_label($$.end);
                 }
                 | WHILE bool_expr enter_loop BEGINLOOP statements ENDLOOP{
                     $$.code = new stringstream();
                     $$.begin = $3.begin;
                     $$.parent = $3.parent;
                     $$.end = $3.end;
-                    *($$.code) << dec_label($$.parent) << $2.code->str() << "?:= " << *$$.begin << ", " << *$2.place << "\n" 
-                    << go_to($$.end) << dec_label($$.begin) << $5.code->str() << go_to($$.parent) << dec_label($$.end);
+                    *($$.code) << declaration_label($$.parent) << $2.code->str() << "?:= " << *$$.begin << ", " << *$2.place << "\n" 
+                    << go_to($$.end) << declaration_label($$.begin) << $5.code->str() << go_to($$.parent) << declaration_label($$.end);
                     loop_stack.pop();
 
                 }
@@ -254,7 +279,7 @@ statement:          var ASSIGN expression{
                     $$.begin = $2.begin;
                     $$.parent = $2.parent;
                     $$.end = $2.end;
-                    *($$.code) << dec_label($$.begin) << $4.code->str() << dec_label($$.parent) << $7.code->str() << "?:= " << *$$.begin << ", " << *$7.place << "\n" << dec_label($$.end);
+                    *($$.code) << declaration_label($$.begin) << $4.code->str() << declaration_label($$.parent) << $7.code->str() << "?:= " << *$$.begin << ", " << *$7.place << "\n" << declaration_label($$.end);
                     loop_stack.pop();
                 }
                 | READ var read_vars{
@@ -351,7 +376,7 @@ bool_expr:       rel_expr bool_expr_continue{
                     if($2.op != NULL && $2.place != NULL)
                     {                        
                         $$.place = new_string();
-                       *($$.code) << dec_temp($$.place) << print_code($$.place, *$2.op, $1.place, $2.place);
+                       *($$.code) << declaration_string($$.place) << print_code($$.place, *$2.op, $1.place, $2.place);
                     }
                     else{
                         $$.place = $1.place;
@@ -375,7 +400,7 @@ rel_expr:    rel_exprs rel_expr_continute{
                     if($2.op != NULL && $2.place != NULL)
                     {                        
                         $$.place = new_string();
-                       *($$.code) << dec_temp($$.place) << print_code($$.place, *$2.op, $1.place, $2.place);
+                       *($$.code) << declaration_string($$.place) << print_code($$.place, *$2.op, $1.place, $2.place);
                     }
                     else{
                         $$.place = $1.place;
@@ -401,7 +426,7 @@ rel_exprs:   rel_exprs_continue{
                 | NOT rel_exprs_continue{
                     $$.code = $2.code;
                     $$.place = new_string();
-                    *($$.code) << dec_temp($$.place) << print_code($$.place, "!", $2.place, NULL);
+                    *($$.code) << declaration_string($$.place) << print_code($$.place, "!", $2.place, NULL);
                 }
                 ;
 
@@ -410,7 +435,7 @@ rel_exprs_continue: expression comp expression{
                     *($$.code) << $2.code->str();
                     *($$.code) << $3.code->str();
                     $$.place = new_string();
-                    *($$.code)<< dec_temp($$.place) << print_code($$.place, *$2.op, $1.place, $3.place);
+                    *($$.code)<< declaration_string($$.place) << print_code($$.place, *$2.op, $1.place, $3.place);
                 }
                 | TRUE{                    
                     $$.code = new stringstream();
@@ -466,7 +491,7 @@ expression:     mult_expr expressions{
                     if($2.op != NULL && $2.place != NULL)
                     {                        
                         $$.place = new_string();
-                       *($$.code)<< dec_temp($$.place) << print_code($$.place, *$2.op, $1.place, $2.place);
+                       *($$.code)<< declaration_string($$.place) << print_code($$.place, *$2.op, $1.place, $2.place);
                     }
                     else{
                         $$.place = $1.place;
@@ -494,7 +519,7 @@ mult_expr:      term mult_exprs{
                     if($2.op != NULL && $2.place != NULL)
                     {                        
                         $$.place = new_string();
-                       *($$.code)<< dec_temp($$.place)<< print_code($$.place, *$2.op, $1.place, $2.place);
+                       *($$.code)<< declaration_string($$.place)<< print_code($$.place, *$2.op, $1.place, $2.place);
                     }
                     else{
                         $$.place = $1.place;
@@ -524,7 +549,7 @@ term:           SUB terms{
                     $$.code = $2.code;
                     $$.place = new_string();
                     string tmp = "-1";
-                    *($$.code)<< dec_temp($$.place) << print_code($$.place, "*",$2.place, &tmp );
+                    *($$.code)<< declaration_string($$.place) << print_code($$.place, "*",$2.place, &tmp );
                   }
                 | terms{
                     $$.code = $1.code;
@@ -555,7 +580,7 @@ terms:         var{
 termss:         IDENT L_PAREN termsss R_PAREN{
                     $$.code = $3.code;
                     $$.place = new_string();
-                    *($$.code) << dec_temp($$.place)<< "call " << $1 << ", " << *$$.place << "\n";
+                    *($$.code) << declaration_string($$.place)<< "call " << $1 << ", " << *$$.place << "\n";
                     string tmp = $1;
                     check_map_dec(tmp);
                 }
@@ -603,7 +628,7 @@ var:            IDENT vars{
                         $$.place = new_string();
                         string* tmp = new string();
                         *tmp = $1;
-                        *($$.code) << dec_temp($$.place) << print_code($$.place, "=[]", tmp,$2.index);
+                        *($$.code) << declaration_string($$.place) << print_code($$.place, "=[]", tmp,$2.index);
                         $$.value = new string();
                         *$$.value = $1;
                     }
@@ -649,10 +674,10 @@ string int_string(int s){
 string go_to(string *s){
     return ":= "+ *s + "\n"; 
 }
-string dec_label(string *s){
+string declaration_label(string *s){
     return ": " +*s + "\n"; 
 }
-string dec_temp(string *s){
+string declaration_string(string *s){
     return ". " +*s + "\n"; 
 }
 string * new_string(){
@@ -685,32 +710,10 @@ void expression_code( Terminal &DD, Terminal D2, Terminal D3, string op){
         DD.op = new string();
         *DD.op = op;
 
-        *(DD.code) << dec_temp(DD.place)<< print_code(DD.place , *D3.op, D2.place, D3.place);
+        *(DD.code) << declaration_string(DD.place)<< print_code(DD.place , *D3.op, D2.place, D3.place);
     } 
 }
 
-
-void push_map(string name, Var v){
-    if(var_map.find(name) == var_map.end()){
-        var_map[name] = v;
-    }
-    else{
-        string tmp = "ERROR: " + name + " already exists";
-        yyerror(tmp.c_str());
-    }
-}
-bool check_map(string name){
-    if(var_map.find(name) == var_map.end()){
-        return false;
-    }
-    return true;
-}
-void check_map_dec(string name){
-    if(!check_map(name)){
-        string tmp = "ERROR: \"" + name + "\" does not exist";
-        yyerror(tmp.c_str());
-    }
-}
 
 int yyerror(const char *s)
 {
