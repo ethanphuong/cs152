@@ -60,7 +60,7 @@ stack<Loop> loop_stack;
 
 %type <NonTerminal> prog_start
 %type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement   
-statement_21  statement_4   statement_5   statement_51  statement_6   statement_61  bool_exp      bool_exp2     rel_and_exp   
+statement_21  statement_4   statement_51  statement_61  bool_exp      bool_exp2     rel_and_exp   
 rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        
 term_3        term_31       term_32       var           var_2         b_loop 
 
@@ -290,15 +290,34 @@ statement:          var ASSIGN expression{
                     loop_stack.pop();
 
                 }
-                | statement_4 {
-                    $$.code = $1.code;
+                | DO b_loop BEGINLOOP statements ENDLOOP WHILE bool_exp{
+                    $$.code = new stringstream();
+                    $$.begin = $2.begin;
+                    $$.parent = $2.parent;
+                    $$.end = $2.end;
+                    *($$.code) << dec_label($$.begin) << $4.code->str() << dec_label($$.parent) << $7.code->str() << "?:= " << *$$.begin << ", " << *$7.place << "\n" << dec_label($$.end);
+                    loop_stack.pop();
                 }
-                | statement_5 {
-                    $$.code = $1.code;
+                | READ var statement_51{
+                    $$.code = $2.code;
+                    if($2.type == INT){
+                       *($$.code) << ".< " << *$2.place << "\n"; 
+                    }
+                    else{
+                       *($$.code) << ".[]< " << *$2.place << ", " << $2.index << "\n"; 
+                    }
+                    *($$.code) << $3.code->str();
                 }
-                | statement_6 {
-                    $$.code = $1.code;
-                }
+                | WRITE var statement_61{
+                    $$.code = $2.code;
+                    if($2.type == INT){
+                       *($$.code) << ".> " << *$2.place << "\n"; 
+                    }
+                    else{
+                       *($$.code) << ".[]> " << *$2.value << ", " << *$2.index << "\n"; 
+                    }
+                    *($$.code) << $3.code->str();
+                  }
                 | CONTINUE{
                     $$.code = new stringstream();
                     if(loop_stack.size() <= 0){
@@ -337,28 +356,6 @@ b_loop:         {
                     loop_stack.push(l);
                 };
 
-statement_4:    DO b_loop BEGINLOOP statements ENDLOOP WHILE bool_exp{
-                    $$.code = new stringstream();
-                    $$.begin = $2.begin;
-                    $$.parent = $2.parent;
-                    $$.end = $2.end;
-                    *($$.code) << dec_label($$.begin) << $4.code->str() << dec_label($$.parent) << $7.code->str() << "?:= " << *$$.begin << ", " << *$7.place << "\n" << dec_label($$.end);
-                    loop_stack.pop();
-                }
-                ;
-
-statement_5:    READ var statement_51{
-                    $$.code = $2.code;
-                    if($2.type == INT){
-                       *($$.code) << ".< " << *$2.place << "\n"; 
-                    }
-                    else{
-                       *($$.code) << ".[]< " << *$2.place << ", " << $2.index << "\n"; 
-                    }
-                    *($$.code) << $3.code->str();
-                }
-                ;
-
 statement_51:   COMMA var statement_51 {
                     $$.code = $2.code;
                     if($2.type == INT){
@@ -371,18 +368,6 @@ statement_51:   COMMA var statement_51 {
                 }
                 | {
                     $$.code = new stringstream();
-                  }
-                ;
-
-statement_6:    WRITE var statement_61{
-                    $$.code = $2.code;
-                    if($2.type == INT){
-                       *($$.code) << ".> " << *$2.place << "\n"; 
-                    }
-                    else{
-                       *($$.code) << ".[]> " << *$2.value << ", " << *$2.index << "\n"; 
-                    }
-                    *($$.code) << $3.code->str();
                   }
                 ;
 
