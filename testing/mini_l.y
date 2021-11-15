@@ -59,10 +59,10 @@ stack<Loop> loop_stack;
 
 
 %type <NonTerminal> prog_start
-%type <Terminal> decl_loop stmt_loop function function_2 declaration declaration_2 declaration_3 statement  statement_1 statement_2   
+%type <Terminal> decl_loop stmt_loop function functions functions_1 declaration declaration_2 declaration_3 statement  statement_1 statement_2   
 statement_21 statement_3   statement_4   statement_5   statement_51  statement_6   statement_61  bool_exp      bool_exp2     rel_and_exp   
 rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        
-term_3        term_31       term_32       var           var_2         b_loop b_func
+term_3        term_31       term_32       var           var_2         b_loop 
 
 
 %%
@@ -81,7 +81,7 @@ prog_start:    function prog_start {
               }
             ;
 
-function:   FUNCTION b_func SEMICOLON BEGIN_PARAMS decl_loop END_PARAMS BEGIN_LOCALS decl_loop END_LOCALS BEGIN_BODY statement SEMICOLON function_2 {         
+function:   FUNCTION functions SEMICOLON BEGIN_PARAMS decl_loop END_PARAMS BEGIN_LOCALS decl_loop END_LOCALS BEGIN_BODY statement SEMICOLON functions_1 {         
                 $$.code = new stringstream(); 
                 string tmp = *$2.place;
                 if( tmp.compare("main") == 0){
@@ -101,7 +101,7 @@ function:   FUNCTION b_func SEMICOLON BEGIN_PARAMS decl_loop END_PARAMS BEGIN_LO
                  *($$.code) << $11.code->str() << $13.code->str();
             }
             ;
-b_func: IDENT {
+functions: IDENT {
             string tmp = $1;
             Var myf = Var();
             myf.type = FUNC;
@@ -112,7 +112,7 @@ b_func: IDENT {
             *$$.place = tmp;
         };
 
-function_2: statement SEMICOLON function_2 {
+functions_1: statement SEMICOLON functions_1 {
                 $$.code = $1.code;
                 *($$.code) << $3.code->str();
               } 
