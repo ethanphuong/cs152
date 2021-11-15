@@ -45,17 +45,14 @@ stack<Loop> loop_stack;
 
 %error-verbose
 
-%token FUNCTION BEGIN_PARAMS END_PARAMS BEGIN_LOCALS END_LOCALS BEGIN_BODY END_BODY
-%token INTEGER ARRAY OF 
-%token IF THEN ENDIF ELSE WHILE DO BEGINLOOP ENDLOOP CONTINUE 
-%token READ WRITE RETURN
-%token AND OR NOT TRUE FALSE 
-%token SUB ADD MULT DIV MOD EQ NEQ LT GT LTE GTE 
-%token SEMICOLON COLON COMMA L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN
-%token NUMBER IDENT
+%token FUNCTION BEGIN_PARAMS END_PARAMS BEGIN_LOCALS END_LOCALS BEGIN_BODY END_BODY INTEGER ARRAY OF IF THEN ENDIF ELSE WHILE DO BEGINLOOP ENDLOOP CONTINUE READ WRITE AND OR NOT TRUE FALSE RETURN SUB ADD MULT DIV MOD EQ NEQ LT GT LTE GTE SEMICOLON COMMA L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN COLON
 
 %type <int_val> NUMBER
 %type <str_val> IDENT
+
+%type <NonTerminal> prog_start
+%type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement assi_expr read_vars write_vars bool_expr  
+bool_expr_continue rel_expr rel_expr_continute rel_exprs rel_exprs_continue comp expression expressions  mult_expr mult_exprs term terms termss termsss termssss var vars         enter_loop
 
 %%
 
