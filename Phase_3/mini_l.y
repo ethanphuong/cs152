@@ -138,7 +138,7 @@ declaration:    IDENT declarations_1 {
                     var.length = $2.length;
                     var.place = new string();
                     *var.place = $1;
-                    $$.vars->push_back(v);
+                    $$.vars->push_back(var);
                     
                     if($2.type == INT_ARR)
                     {
@@ -186,7 +186,7 @@ declarations_1:  COMMA IDENT declarations_1 {
                     var.type = $3.type;
                     var.length = $3.length;
                     var.place = new string();
-                    *v.place = $2;
+                    *var.place = $2;
                     $$.vars->push_back(v);
                     if($3.type == INT_ARR)
                     {
