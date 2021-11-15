@@ -59,7 +59,8 @@ stack<Loop> loop_stack;
 
 
 %type <NonTerminal> prog_start
-%type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement  assi_expr  read_vars  write_vars  bool_exp      bool_exp2     rel_and_exp   
+%type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement  assi_expr  read_vars  write_vars  bool_expr  
+bool_expr_continue     rel_and_exp   
 rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        
 term_3        term_31       term_32       var           var_2         enter_loop
 
@@ -263,7 +264,7 @@ statement:          var ASSIGN expression{
                         yyerror("Error: expression is null.");
                     }
                 }
-                | IF bool_exp THEN statements assi_expr ENDIF{
+                | IF bool_expr THEN statements assi_expr ENDIF{
                     $$.code = new stringstream();
                     $$.begin = new_label();
                     $$.end = new_label();
@@ -278,7 +279,7 @@ statement:          var ASSIGN expression{
                     }
                     *($$.code) << dec_label($$.end);
                 }
-                | WHILE bool_exp enter_loop BEGINLOOP statements ENDLOOP{
+                | WHILE bool_expr enter_loop BEGINLOOP statements ENDLOOP{
                     $$.code = new stringstream();
                     $$.begin = $3.begin;
                     $$.parent = $3.parent;
@@ -288,7 +289,7 @@ statement:          var ASSIGN expression{
                     loop_stack.pop();
 
                 }
-                | DO enter_loop BEGINLOOP statements ENDLOOP WHILE bool_exp{
+                | DO enter_loop BEGINLOOP statements ENDLOOP WHILE bool_expr{
                     $$.code = new stringstream();
                     $$.begin = $2.begin;
                     $$.parent = $2.parent;
@@ -384,7 +385,7 @@ write_vars:   COMMA var write_vars{
                  }
                 ;
 
-bool_exp:       rel_and_exp bool_exp2{
+bool_expr:       rel_and_exp bool_expr_continue{
                     $$.code = $1.code;
                     *($$.code) << $2.code->str();
                     if($2.op != NULL && $2.place != NULL)
@@ -399,7 +400,7 @@ bool_exp:       rel_and_exp bool_exp2{
                 }
                 ;
 
-bool_exp2:      OR rel_and_exp bool_exp2{
+bool_expr_continue:      OR rel_and_exp bool_expr_continue{
                     expression_code($$,$2,$3,"||");
                 }
                 |{
@@ -461,7 +462,7 @@ relation_exp_s: expression comp expression{
                     $$.place = new string();
                     *$$.place = "0";
                   }
-                | L_PAREN bool_exp R_PAREN{
+                | L_PAREN bool_expr R_PAREN{
                     $$.code = $2.code;
                     $$.place = $2.place;
                 }
