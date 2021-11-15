@@ -21,7 +21,6 @@ void expression_code( Terminal &DD,  Terminal D2, Terminal D3,string op);
 bool success = true;
 bool no_main = false;
 
-map<string,Var> var_map;
 stack<Loop> loop_stack;
 
 %}
@@ -88,9 +87,6 @@ functions: IDENT {
             string tmp = $1;
             Var myf = Var();
             myf.type = FUNC;
-            if(!check_map(tmp)){
-                push_map(tmp,myf); 
-            }
             $$.place = new string();
             *$$.place = tmp;
         };
@@ -147,9 +143,6 @@ declaration:    IDENT declarations_1 {
                         }
                         *($$.code) << ".[] " << $1 << ", " << $2.length << "\n";
                         string s = $1;
-                        if(!check_map(s)){
-                            push_map(s,v);
-                        }
                         else{
                             string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
                             yyerror(tmp.c_str());
@@ -159,9 +152,6 @@ declaration:    IDENT declarations_1 {
                     else if($2.type == INT){
                         *($$.code) << ". " << $1 << "\n";
                         string s = $1;
-                        if(!check_map(s)){
-                            push_map(s,v);
-                        }
                         else{
                             string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
                             yyerror(tmp.c_str());
@@ -186,9 +176,6 @@ declarations_1:  COMMA IDENT declarations_1 {
                     if($3.type == INT_ARR){
                         *($$.code) << ".[] " << $2 << ", " << $3.length << "\n";
                         string s = $2;
-                        if(!check_map(s)){
-                            push_map(s,v);
-                        }
                         else{
                             string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
                             yyerror(tmp.c_str());
@@ -197,9 +184,6 @@ declarations_1:  COMMA IDENT declarations_1 {
                     else if($3.type == INT){
                         *($$.code) << ". " << $2 << "\n";
                         string s = $2;
-                        if(!check_map(s)){
-                            push_map(s,v);
-                        }
                         else{
                             string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
                             yyerror(tmp.c_str());
@@ -582,7 +566,6 @@ termss:         IDENT L_PAREN termsss R_PAREN{
                     $$.place = new_string();
                     *($$.code) << declaration_string($$.place)<< "call " << $1 << ", " << *$$.place << "\n";
                     string tmp = $1;
-                    check_map_dec(tmp);
                 }
                 ;
 
@@ -607,17 +590,6 @@ var:            IDENT vars{
                     $$.code = $2.code;
                     $$.type = $2.type;
                     string tmp = $1;
-                    check_map_dec(tmp);
-                    if(check_map(tmp) && var_map[tmp].type != $2.type){
-                        if($2.type == INT_ARR){
-                            string output ="Error: used variable \"" + tmp + "\" is not an array.";
-                            yyerror(output.c_str());
-                        }
-                        else if($2.type == INT){
-                            string output ="Error: used array variable \"" + tmp + "\" is missing a specified index.";
-                            yyerror(output.c_str());
-                        }
-                    }
 
                     if($2.index == NULL){
                         $$.place = new string();
