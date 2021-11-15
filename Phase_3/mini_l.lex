@@ -1,7 +1,5 @@
 DIGIT [0-9] 
 LETTERS [a-zA-Z]
-IDENT_VARIABLE {LETTERS}({LETTERS}|{DIGIT}|[_])*(({LETTERS}|{DIGIT})+)*
-IDENT_DIGIT {DIGIT}+
 IDENT_ERROR_BEGIN ({DIGIT}|[_])({LETTERS}|{DIGIT}|[_])*(({LETTERS}|{DIGIT})+)*
 IDENT_ERROR_END {LETTERS}({LETTERS}|{DIGIT}|[_])*([_])+
 
@@ -59,8 +57,6 @@ int currPos = 0;
 ":" {printf("COLON\n"); currPos += yyleng;}
 {DIGIT}+ {printf("NUM %s\n", yytext); currPos += yyleng;}
 {LETTERS}+ {printf("IDENT %s\n", yytext); currPos += yyleng;}
-{IDENT_VARIABLE}+ /*printf("IDENT -> %s\n",yytext)*/;strcpy(yylval.buf,yytext);return(IDENT);cursor_pos += yyleng;  
-{IDENT_DIGIT}+ /*printf("NUMBER -> %s\n",yytext)*/;yylval.number = atoi(yytext); return(NUMBER); cursor_pos += yyleng; 
 {IDENT_ERROR_BEGIN}+ printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n",line_cnt,cursor_pos,yytext);exit(0);
 {IDENT_ERROR_END}+ printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n",line_cnt,cursor_pos,yytext);exit(0);
 
