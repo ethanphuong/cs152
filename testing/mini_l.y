@@ -18,7 +18,7 @@ string declaration_string(string *s);
 void expression_code( secondStruct &first,  secondStruct second, secondStruct third, string op);
 void push(string name, Var v);
 void checks(string name)
-bool bool1 = true;
+bool bool_1 = true;
 bool bool2 = false;
 bool check(string name);
 ;
@@ -797,7 +797,7 @@ void checks(string name) {
 int yyerror(const char *s) {
     extern int line_cnt;
     extern int cursor_pos;
-    bool1 = false;
+    bool_1 = false;
     printf(">>> Line %d, position %d: %s\n",line_cnt,cursor_pos,s);
     return -1;
 }
@@ -812,7 +812,7 @@ int main(int argc, char **argv) {
 
     yyparse();
 
-    if(bool1){
+    if(bool_1){
         ofstream file;
         file.open("mil_code.mil");
         file << mil_code->str();
