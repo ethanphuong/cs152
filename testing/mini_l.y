@@ -62,7 +62,7 @@ stack<Loop> loop_stack;
 %type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement  assi_expr  read_vars  write_vars  bool_expr  
 bool_expr_continue     rel_expr
 rel_expr_continute rel_exprs   rel_exprs_continue comp          expression    expressions  mult_expr     mult_exprs   term          terms        
-terms        termss       termsss       var           var_2         enter_loop
+termss        termsss       termssss       var           var_2         enter_loop
 
 %%
 
