@@ -39,7 +39,7 @@ enum Type {INT,INT_ARR,FUNC};
     };
 
 
-    struct SecondStruct{
+    struct secondStruct{
        stringstream *code;
        //location
        string *place;
