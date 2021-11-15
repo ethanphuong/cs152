@@ -1,5 +1,20 @@
 %{
-#include "mini_l.h"
+#include <iostream>
+
+/*data structures*/
+#include <vector>
+#include <stack>
+#include <map>
+
+
+#include <sstream>
+#include <fstream>
+#include <stdio.h>
+#include <string>
+
+using namespace std;
+
+enum Type {INT,INT_ARR,FUNC};
 
 stringstream *mil_code;
 FILE *instream;
