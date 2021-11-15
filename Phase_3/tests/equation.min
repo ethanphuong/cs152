@@ -1,0 +1,20 @@
+function main;
+beginparams
+endparams
+beginlocals
+  a: integer;
+  b: integer;
+  c: integer;
+  d: integer;
+  e: integer;
+endlocals
+beginbody
+
+  a := 10;
+  b := 2;
+  c := 2;
+  d := 6;
+  e := a + b * c + d;
+  write e;
+
+endbody

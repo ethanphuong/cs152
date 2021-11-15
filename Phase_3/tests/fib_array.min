@@ -1,0 +1,22 @@
+function main;
+beginparams
+endparams
+
+beginlocals
+  fib : array [5] of integer;
+endlocals
+
+beginbody	## main program
+  fib[0] := 1;
+  fib[1] := 1;
+  fib[2] := fib[0] + fib[1];
+  fib[3] := fib[1] + fib[2];
+  fib[4] := fib[3] + fib[2];
+
+  write fib[0];    ## should print 1
+  write fib[1];    ## should print 1
+  write fib[2];    ## should print 2
+  write fib[3];    ## should print 3
+  write fib[4];    ## should print 5
+endbody
+

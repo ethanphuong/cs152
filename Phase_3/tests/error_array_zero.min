@@ -1,0 +1,11 @@
+function main;
+beginparams
+endparams
+beginlocals
+	r : array [0] of integer;
+endlocals
+beginbody
+
+  r[0] := 100;
+
+endbody

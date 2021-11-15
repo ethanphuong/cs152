@@ -1,0 +1,46 @@
+### This program has no sub function!
+### print out an error message that 'sub' has not been defined.
+
+function add;
+beginparams
+endparams
+beginlocals
+	a : integer;
+	b : integer;
+	c : integer;
+endlocals
+beginbody
+
+  c := a + b;
+  return c;
+endbody
+
+function mult;
+beginparams
+endparams
+beginlocals
+	a : integer;
+	b : integer;
+	c : integer;
+endlocals
+beginbody
+
+  c := a * b;
+  return c;
+endbody
+
+function main;
+beginparams
+endparams
+beginlocals
+	a : integer;
+	b : integer;
+	c : integer;
+endlocals
+beginbody
+
+  a := 10;
+  b := 30;
+  c := sub(a , b);
+
+endbody
