@@ -785,9 +785,9 @@ void checks(string name) {
 }
 
 int yyerror(const char *s) {
-    extern int line_cnt;
-    extern int cursor_pos;
-    printf(">>> Line %d, position %d: %s\n",line_cnt,cursor_pos,s);
+    extern int currLine;
+    extern int currPos;
+    printf(">>> Line %d, position %d: %s\n",currLine,currPos,s);
     return -1;
 }
 
