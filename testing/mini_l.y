@@ -6,10 +6,8 @@
 
 int yyerror(const char* s);
 int yylex(void);
-stringstream *all_code;
-FILE * myin;
-void print_test(string output);
-void print_test(stringstream o);
+stringstream *mil_code;
+FILE *instream;
 string gen_code(string *res, string op, string *val1, string *val2);
 string to_string(char* s);
 string to_string(int s);
@@ -63,7 +61,7 @@ prog_start:    function prog_start {
                     yyerror("ERROR: main function not defined.");
                 }
 
-                all_code = $$.code;
+                mil_code = $$.code;
               } 
             | {
                 $$.code = new stringstream();
@@ -656,12 +654,6 @@ vars:          L_SQUARE_BRACKET expression R_SQUARE_BRACKET{
             
 %%
 
-void print_test(string o){
-    cout << "\n---------TEST-----------\n"
-        << o
-        << "\n----------END -----------\n";
-}
-
 string gen_code(string *res, string op, string *val1, string *val2){
     if(op == "!"){
         return op + " " + *res + ", " + *val1 + "\n";
@@ -760,7 +752,7 @@ int yyerror(const char *s)
 
 int main(int argc, char **argv) {
 
-    if ( (argc > 1) && (myin = fopen(argv[1],"r")) == NULL){
+    if ( (argc > 1) && (instream = fopen(argv[1],"r")) == NULL){
         printf("syntax: %s filename\n", argv[0]);
         return 1;
     }
@@ -770,7 +762,7 @@ int main(int argc, char **argv) {
     if(success){
         ofstream file;
         file.open("mil_code.mil");
-        file << all_code->str();
+        file << mil_code->str();
         file.close();
     }
     else{
