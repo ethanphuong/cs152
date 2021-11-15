@@ -9,11 +9,10 @@ int yylex(void);
 stringstream *mil_code;
 FILE *instream;
 string print_code(string *res, string op, string *val1, string *val2);
-string char_string(char* s);
 string int_string(int s);
-int tempi = 0;
-int templ = 0;
-string * new_temp();
+int temp1 = 0;
+int temp2 = 0;
+string * new_string();
 string * new_label();
 string go_to(string *s);
 string dec_label(string *s);
@@ -144,34 +143,7 @@ declaration:    IDENT declarations_1 {
                     v.place = new string();
                     *v.place = $1;
                     $$.vars->push_back(v);
-                    if($2.type == INT_ARR){
-                        if($2.length <= 0){
-                            yyerror("ERROR: invalid array size <= 0");
-                        }
-                        *($$.code) << ".[] " << $1 << ", " << $2.length << "\n";
-                        string s = $1;
-                        if(!check_map(s)){
-                            push_map(s,v);
-                        }
-                        else{
-                            string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
-                            yyerror(tmp.c_str());
-                        }
-                    }
-
-                    else if($2.type == INT){
-                        *($$.code) << ". " << $1 << "\n";
-                        string s = $1;
-                        if(!check_map(s)){
-                            push_map(s,v);
-                        }
-                        else{
-                            string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
-                            yyerror(tmp.c_str());
-                        }
-                    }else{
-                            yyerror("ERROR: invalid type");
-                    }
+                   
                 }
                 ;
 
@@ -244,7 +216,7 @@ statement:          var ASSIGN expression{
                         *($$.code) << print_code($1.value, "[]=", $1.index, $3.place);
                     }
                     else if($1.type == INT_ARR && $3.type == INT_ARR){
-                        string *tmp = new_temp();
+                        string *tmp = new_string();
                         *($$.code) << dec_temp(tmp) << print_code(tmp, "=[]", $3.place, $3.index);
                         *($$.code) << print_code($1.value, "[]=", $1.index, tmp);
                     }
@@ -493,7 +465,7 @@ expression:     mult_expr expressions{
                     *($$.code) << $2.code->str();
                     if($2.op != NULL && $2.place != NULL)
                     {                        
-                        $$.place = new_temp();
+                        $$.place = new_string();
                        *($$.code)<< dec_temp($$.place) << print_code($$.place, *$2.op, $1.place, $2.place);
                     }
                     else{
@@ -521,7 +493,7 @@ mult_expr:      term mult_exprs{
                     *($$.code) << $2.code->str();
                     if($2.op != NULL && $2.place != NULL)
                     {                        
-                        $$.place = new_temp();
+                        $$.place = new_string();
                        *($$.code)<< dec_temp($$.place)<< print_code($$.place, *$2.op, $1.place, $2.place);
                     }
                     else{
@@ -550,7 +522,7 @@ mult_exprs:    MULT term mult_exprs{
 
 term:           SUB terms{
                     $$.code = $2.code;
-                    $$.place = new_temp();
+                    $$.place = new_string();
                     string tmp = "-1";
                     *($$.code)<< dec_temp($$.place) << print_code($$.place, "*",$2.place, &tmp );
                   }
@@ -582,7 +554,7 @@ terms:         var{
 
 termss:         IDENT L_PAREN termsss R_PAREN{
                     $$.code = $3.code;
-                    $$.place = new_temp();
+                    $$.place = new_string();
                     *($$.code) << dec_temp($$.place)<< "call " << $1 << ", " << *$$.place << "\n";
                     string tmp = $1;
                     check_map_dec(tmp);
@@ -628,7 +600,7 @@ var:            IDENT vars{
                     }
                     else{
                         $$.index = $2.index;
-                        $$.place = new_temp();
+                        $$.place = new_string();
                         string* tmp = new string();
                         *tmp = $1;
                         *($$.code) << dec_temp($$.place) << print_code($$.place, "=[]", tmp,$2.index);
@@ -683,20 +655,20 @@ string dec_label(string *s){
 string dec_temp(string *s){
     return ". " +*s + "\n"; 
 }
-string * new_temp(){
+string * new_string(){
     string * t = new string();
     ostringstream conv;
-    conv << tempi;
+    conv << temp1;
     *t = "__temp__"+ conv.str();
-    tempi++;
+    temp1++;
     return t;
 }
 string * new_label(){
     string * t = new string();
     ostringstream conv;
-    conv << templ;
+    conv << temp2;
     *t = "__label__"+ conv.str();
-    templ++;
+    temp2++;
     return t;
 }
                    
