@@ -8,7 +8,7 @@ int yyerror(const char* s);
 int yylex(void);
 stringstream *mil_code;
 FILE *instream;
-string gen_code(string *res, string op, string *val1, string *val2);
+string print_code(string *res, string op, string *val1, string *val2);
 string to_string(char* s);
 string to_string(int s);
 int tempi = 0;
@@ -238,15 +238,15 @@ statement:          var ASSIGN expression{
                        *($$.code) << "= " << *$1.place << ", " << *$3.place << "\n";
                     }
                     else if($1.type == INT && $3.type == INT_ARR){
-                        *($$.code) << gen_code($1.place, "=[]", $3.place, $3.index);
+                        *($$.code) << print_code($1.place, "=[]", $3.place, $3.index);
                     }
                     else if($1.type == INT_ARR && $3.type == INT && $1.value != NULL){
-                        *($$.code) << gen_code($1.value, "[]=", $1.index, $3.place);
+                        *($$.code) << print_code($1.value, "[]=", $1.index, $3.place);
                     }
                     else if($1.type == INT_ARR && $3.type == INT_ARR){
                         string *tmp = new_temp();
-                        *($$.code) << dec_temp(tmp) << gen_code(tmp, "=[]", $3.place, $3.index);
-                        *($$.code) << gen_code($1.value, "[]=", $1.index, tmp);
+                        *($$.code) << dec_temp(tmp) << print_code(tmp, "=[]", $3.place, $3.index);
+                        *($$.code) << print_code($1.value, "[]=", $1.index, tmp);
                     }
                     else{
                         yyerror("Error: expression is null.");
@@ -379,7 +379,7 @@ bool_expr:       rel_expr bool_expr_continue{
                     if($2.op != NULL && $2.place != NULL)
                     {                        
                         $$.place = new_temp();
-                       *($$.code) << dec_temp($$.place) << gen_code($$.place, *$2.op, $1.place, $2.place);
+                       *($$.code) << dec_temp($$.place) << print_code($$.place, *$2.op, $1.place, $2.place);
                     }
                     else{
                         $$.place = $1.place;
@@ -403,7 +403,7 @@ rel_expr:    rel_exprs rel_expr_continute{
                     if($2.op != NULL && $2.place != NULL)
                     {                        
                         $$.place = new_temp();
-                       *($$.code) << dec_temp($$.place) << gen_code($$.place, *$2.op, $1.place, $2.place);
+                       *($$.code) << dec_temp($$.place) << print_code($$.place, *$2.op, $1.place, $2.place);
                     }
                     else{
                         $$.place = $1.place;
@@ -429,7 +429,7 @@ rel_exprs:   rel_exprs_continue{
                 | NOT rel_exprs_continue{
                     $$.code = $2.code;
                     $$.place = new_temp();
-                    *($$.code) << dec_temp($$.place) << gen_code($$.place, "!", $2.place, NULL);
+                    *($$.code) << dec_temp($$.place) << print_code($$.place, "!", $2.place, NULL);
                 }
                 ;
 
@@ -438,7 +438,7 @@ rel_exprs_continue: expression comp expression{
                     *($$.code) << $2.code->str();
                     *($$.code) << $3.code->str();
                     $$.place = new_temp();
-                    *($$.code)<< dec_temp($$.place) << gen_code($$.place, *$2.op, $1.place, $3.place);
+                    *($$.code)<< dec_temp($$.place) << print_code($$.place, *$2.op, $1.place, $3.place);
                 }
                 | TRUE{                    
                     $$.code = new stringstream();
@@ -494,7 +494,7 @@ expression:     mult_expr expressions{
                     if($2.op != NULL && $2.place != NULL)
                     {                        
                         $$.place = new_temp();
-                       *($$.code)<< dec_temp($$.place) << gen_code($$.place, *$2.op, $1.place, $2.place);
+                       *($$.code)<< dec_temp($$.place) << print_code($$.place, *$2.op, $1.place, $2.place);
                     }
                     else{
                         $$.place = $1.place;
@@ -522,7 +522,7 @@ mult_expr:      term mult_exprs{
                     if($2.op != NULL && $2.place != NULL)
                     {                        
                         $$.place = new_temp();
-                       *($$.code)<< dec_temp($$.place)<< gen_code($$.place, *$2.op, $1.place, $2.place);
+                       *($$.code)<< dec_temp($$.place)<< print_code($$.place, *$2.op, $1.place, $2.place);
                     }
                     else{
                         $$.place = $1.place;
@@ -552,7 +552,7 @@ term:           SUB terms{
                     $$.code = $2.code;
                     $$.place = new_temp();
                     string tmp = "-1";
-                    *($$.code)<< dec_temp($$.place) << gen_code($$.place, "*",$2.place, &tmp );
+                    *($$.code)<< dec_temp($$.place) << print_code($$.place, "*",$2.place, &tmp );
                   }
                 | terms{
                     $$.code = $1.code;
@@ -631,7 +631,7 @@ var:            IDENT vars{
                         $$.place = new_temp();
                         string* tmp = new string();
                         *tmp = $1;
-                        *($$.code) << dec_temp($$.place) << gen_code($$.place, "=[]", tmp,$2.index);
+                        *($$.code) << dec_temp($$.place) << print_code($$.place, "=[]", tmp,$2.index);
                         $$.value = new string();
                         *$$.value = $1;
                     }
@@ -654,7 +654,7 @@ vars:          L_SQUARE_BRACKET expression R_SQUARE_BRACKET{
             
 %%
 
-string gen_code(string *res, string op, string *val1, string *val2){
+string print_code(string *res, string op, string *val1, string *val2){
     if(op == "!"){
         return op + " " + *res + ", " + *val1 + "\n";
     }
@@ -713,7 +713,7 @@ void expression_code( Terminal &DD, Terminal D2, Terminal D3, string op){
         DD.op = new string();
         *DD.op = op;
 
-        *(DD.code) << dec_temp(DD.place)<< gen_code(DD.place , *D3.op, D2.place, D3.place);
+        *(DD.code) << dec_temp(DD.place)<< print_code(DD.place , *D3.op, D2.place, D3.place);
     } 
 }
 
