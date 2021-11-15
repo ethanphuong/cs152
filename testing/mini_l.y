@@ -59,7 +59,7 @@ stack<Loop> loop_stack;
 
 
 %type <NonTerminal> prog_start
-%type <Terminal> decl_loop stmt_loop function functions functions_1 declaration declaration_2 declaration_3 statement  statement_1 statement_2   
+%type <Terminal> declarations statements function functions functions_1 declaration declaration_2 declaration_3 statement  statement_1 statement_2   
 statement_21 statement_3   statement_4   statement_5   statement_51  statement_6   statement_61  bool_exp      bool_exp2     rel_and_exp   
 rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        
 term_3        term_31       term_32       var           var_2         b_loop 
@@ -81,7 +81,7 @@ prog_start:    function prog_start {
               }
             ;
 
-function:   FUNCTION functions SEMICOLON BEGIN_PARAMS decl_loop END_PARAMS BEGIN_LOCALS decl_loop END_LOCALS BEGIN_BODY statement SEMICOLON functions_1 {         
+function:   FUNCTION functions SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statement SEMICOLON functions_1 {         
                 $$.code = new stringstream(); 
                 string tmp = *$2.place;
                 if( tmp.compare("main") == 0){
@@ -122,7 +122,7 @@ functions_1: statement SEMICOLON functions_1 {
               }
             ;
 
-decl_loop:  declaration SEMICOLON decl_loop {
+declarations:  declaration SEMICOLON declarations {
                 $$.code = $1.code;
                 $$.vars = $1.vars;
                 for( int i = 0; i < $3.vars->size(); ++i){
@@ -136,7 +136,7 @@ decl_loop:  declaration SEMICOLON decl_loop {
               }
             ;
 
-stmt_loop:  statement SEMICOLON stmt_loop {
+statements:  statement SEMICOLON statements {
                 $$.code = $1.code;
                 *($$.code) << $3.code->str();
               } 
@@ -301,7 +301,7 @@ statement_1:    var ASSIGN expression{
                 }
                 ;
 
-statement_2:    IF bool_exp THEN stmt_loop statement_21 ENDIF{
+statement_2:    IF bool_exp THEN statements statement_21 ENDIF{
                     $$.code = new stringstream();
                     $$.begin = new_label();
                     $$.end = new_label();
@@ -322,13 +322,13 @@ statement_21:   {
                     $$.code = new stringstream();
                     $$.begin = NULL;
                 }
-                | ELSE stmt_loop{
+                | ELSE statements{
                     $$.code = $2.code;
                     $$.begin = new_label();
                 }
                 ;
 
-statement_3:    WHILE bool_exp b_loop BEGINLOOP stmt_loop ENDLOOP{
+statement_3:    WHILE bool_exp b_loop BEGINLOOP statements ENDLOOP{
                     $$.code = new stringstream();
                     $$.begin = $3.begin;
                     $$.parent = $3.parent;
@@ -352,7 +352,7 @@ b_loop:         {
                     loop_stack.push(l);
                 };
 
-statement_4:    DO b_loop BEGINLOOP stmt_loop ENDLOOP WHILE bool_exp{
+statement_4:    DO b_loop BEGINLOOP statements ENDLOOP WHILE bool_exp{
                     $$.code = new stringstream();
                     $$.begin = $2.begin;
                     $$.parent = $2.parent;
