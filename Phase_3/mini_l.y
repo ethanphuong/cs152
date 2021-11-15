@@ -19,6 +19,7 @@ void code(secondStruct &first, secondStruct second, secondStruct third, string o
 void push(string name, Var var);
 void checks(string name);
 bool check(string name);
+bool bool1 = false;
 ;
 
 map<string,Var> var_map;
@@ -55,6 +56,9 @@ bool_expr_continue rel_expr rel_expr_continute rel_exprs rel_exprs_continue comp
 prog_start:    function prog_start {
                 $$.code = $1.code;
                 *($$.code) << $2.code->str();
+                if (!bool1) {
+                    yyerror("Error: no main function.");
+                    }
                 mil_code = $$.code;
               } 
             | {
@@ -64,6 +68,10 @@ prog_start:    function prog_start {
 function:   FUNCTION functions SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statement SEMICOLON functions_1 {         
                 $$.code = new stringstream(); 
                 string temp = *$2.place;
+                
+                if (temp.compare("main") == 0) {
+                    bool1 = true;
+                    }
 
                 *($$.code)  << "func " << temp << "\n" << $5.code->str() << $8.code->str();
                 for(int i = 0; i < $5.vars->size(); ++i)
