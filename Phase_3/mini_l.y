@@ -84,11 +84,11 @@ function:   FUNCTION functions SEMICOLON BEGIN_PARAMS declarations END_PARAMS BE
             };
 functions: IDENT {
             string temp = $1;
-            Var myf = Var();
-            myf.type = FUNC;
+            Var func = Var();
+            func.type = FUNC;
             if(!check(temp))
             {
-                push(temp,myf); 
+                push(temp, func); 
             }
             $$.place = new string();
             *$$.place = temp;
@@ -337,8 +337,8 @@ statement:          var ASSIGN expression {
                     }
                     else
                     {
-                        Loop l = loop_stack.top();
-                        *($$.code) << ":= " << *l.parent << "\n";
+                        Loop loop = loop_stack.top();
+                        *($$.code) << ":= " << *loop.parent << "\n";
                     }
                 }
                 | RETURN expression
@@ -364,10 +364,10 @@ enter_loop:         {
                     $$.begin = new_label();
                     $$.parent = new_label();
                     $$.end = new_label();
-                    Loop l = Loop();
-                    l.parent = $$.parent;
-                    l.begin = $$.begin;
-                    l.end = $$.end;
+                    Loop loop = Loop();
+                    loop.parent = $$.parent;
+                    loop.begin = $$.begin;
+                    loop.end = $$.end;
                     loop_stack.push(l);
                 };
 
