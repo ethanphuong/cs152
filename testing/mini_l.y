@@ -15,7 +15,7 @@ string * new_label();
 string go_to(string *s);
 string declaration_label(string *s);
 string declaration_string(string *s);
-void expression_code( secondStruct &first,  secondStruct second, secondStruct third, string op);
+void code(secondStruct &first, secondStruct second, secondStruct third, string op);
 void push(string name, Var v);
 void checks(string name);
 bool bool1 = true;
@@ -429,7 +429,7 @@ bool_expr:       rel_expr bool_expr_continue {
                 };
 
 bool_expr_continue:      OR rel_expr bool_expr_continue {
-                    expression_code($$,$2,$3,"||");
+                    code ($$,$2,$3,"||");
                 }
                 |{
                     $$.code = new stringstream();
@@ -452,7 +452,7 @@ rel_expr:    rel_exprs rel_expr_continute {
                 };
 
 rel_expr_continute:   AND rel_exprs rel_expr_continute {
-                    expression_code($$,$2,$3,"&&");
+                    code($$,$2,$3,"&&");
 
                 }
                 |
@@ -550,11 +550,11 @@ expression:     mult_expr expressions {
                     };
 
 expressions:   ADD mult_expr expressions {
-                    expression_code($$,$2,$3,"+");
+                    code($$,$2,$3,"+");
                   }
                 | SUB mult_expr expressions
                 {
-                    expression_code($$,$2,$3,"-");
+                    code($$,$2,$3,"-");
                 }
                 | {
                     $$.code = new stringstream();
@@ -577,16 +577,16 @@ mult_expr:      term mult_exprs {
                   };
 
 mult_exprs:    MULT term mult_exprs {
-                    expression_code($$,$2,$3,"*");
+                    code($$,$2,$3,"*");
 
                 }
                 | DIV term mult_exprs
                 {
-                    expression_code($$,$2,$3,"/");
+                    code($$,$2,$3,"/");
                 }
                 | MOD term mult_exprs
                 {          
-                    expression_code($$,$2,$3,"%");
+                    code($$,$2,$3,"%");
                 }
                 |
                 {
@@ -752,7 +752,7 @@ string * new_label() {
     return t;
 }
                    
-void expression_code( secondStruct &first, secondStruct second, secondStruct third, string op) {
+void code(secondStruct &first, secondStruct second, secondStruct third, string op) {
     first.code = second.code;
     *(first.code) << third.code->str();
     if(third.op == NULL)
