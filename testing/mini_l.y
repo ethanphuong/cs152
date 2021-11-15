@@ -17,7 +17,7 @@ string * new_label();
 string go_to(string *s);
 string declaration_label(string *s);
 string declaration_string(string *s);
-void expression_code( secondStruct &DD,  secondStruct D2, secondStruct D3,string op);
+void expression_code( secondStruct &first,  secondStruct second, secondStruct third, string op);
 bool success = true;
 bool no_main = false;
 void push_map(string name, Var v);
@@ -700,20 +700,20 @@ string * new_label(){
     return t;
 }
                    
-void expression_code( secondStruct &DD, secondStruct D2, secondStruct D3, string op){
-    DD.code = D2.code;
-    *(DD.code) << D3.code->str();
-    if(D3.op == NULL){
-        DD.place = D2.place;
-        DD.op = new string();
-        *DD.op = op;
+void expression_code( secondStruct &first, secondStruct second, secondStruct third, string op){
+    first.code = second.code;
+    *(first.code) << third.code->str();
+    if(third.op == NULL){
+        first.place = second.place;
+        first.op = new string();
+        *first.op = op;
     }
     else{
-        DD.place = new_string();
-        DD.op = new string();
-        *DD.op = op;
+        first.place = new_string();
+        first.op = new string();
+        *first.op = op;
 
-        *(DD.code) << declaration_string(DD.place)<< print_code(DD.place , *D3.op, D2.place, D3.place);
+        *(first.code) << declaration_string(first.place)<< print_code(first.place , *third.op, second.place, third.place);
     } 
 }
 
