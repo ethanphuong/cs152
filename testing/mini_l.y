@@ -60,8 +60,8 @@ stack<Loop> loop_stack;
 
 %type <NonTerminal> prog_start
 %type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement  assi_expr  read_vars  write_vars  bool_expr  
-bool_expr_continue     rel_and_exp   
-rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        
+bool_expr_continue     rel_expr
+rel_expr_continute rel_exprs   rel_exprs_continue comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        
 term_3        term_31       term_32       var           var_2         enter_loop
 
 %%
@@ -385,7 +385,7 @@ write_vars:   COMMA var write_vars{
                  }
                 ;
 
-bool_expr:       rel_and_exp bool_expr_continue{
+bool_expr:       rel_expr bool_expr_continue{
                     $$.code = $1.code;
                     *($$.code) << $2.code->str();
                     if($2.op != NULL && $2.place != NULL)
@@ -400,7 +400,7 @@ bool_expr:       rel_and_exp bool_expr_continue{
                 }
                 ;
 
-bool_expr_continue:      OR rel_and_exp bool_expr_continue{
+bool_expr_continue:      OR rel_expr bool_expr_continue{
                     expression_code($$,$2,$3,"||");
                 }
                 |{
@@ -409,7 +409,7 @@ bool_expr_continue:      OR rel_and_exp bool_expr_continue{
                  }
                 ; 
 
-rel_and_exp:    relation_exp rel_and_exp2{
+rel_expr:    rel_exprs rel_expr_continute{
                     $$.code = $1.code;
                     *($$.code) << $2.code->str();
                     if($2.op != NULL && $2.place != NULL)
@@ -424,7 +424,7 @@ rel_and_exp:    relation_exp rel_and_exp2{
                 }
                 ;
 
-rel_and_exp2:   AND relation_exp rel_and_exp2{
+rel_expr_continute:   AND rel_exprs rel_expr_continute{
                     expression_code($$,$2,$3,"&&");
 
                 }
@@ -434,18 +434,18 @@ rel_and_exp2:   AND relation_exp rel_and_exp2{
                  }
                 ;
 
-relation_exp:   relation_exp_s{
+rel_exprs:   rel_exprs_continue{
                     $$.code = $1.code;
                     $$.place = $1.place; 
                 }
-                | NOT relation_exp_s{
+                | NOT rel_exprs_continue{
                     $$.code = $2.code;
                     $$.place = new_temp();
                     *($$.code) << dec_temp($$.place) << gen_code($$.place, "!", $2.place, NULL);
                 }
                 ;
 
-relation_exp_s: expression comp expression{
+rel_exprs_continue: expression comp expression{
                     $$.code = $1.code;
                     *($$.code) << $2.code->str();
                     *($$.code) << $3.code->str();
