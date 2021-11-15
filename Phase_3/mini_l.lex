@@ -1,69 +1,82 @@
 DIGIT [0-9] 
-LETTERS [a-zA-Z]
-IDENT_ERROR_BEGIN ({DIGIT}|[_])({LETTERS}|{DIGIT}|[_])*(({LETTERS}|{DIGIT})+)*
-IDENT_ERROR_END {LETTERS}({LETTERS}|{DIGIT}|[_])*([_])+
-
 
 %{
-int currPos = 0;
-int line = 0;
+#include "y.tab.h"
+
+int currPos = 1;
+int currLine = 1;
+
 %}
 
 %%
-"function" {printf("FUNCTION\n"); currPos += yyleng;}
-"beginparams" {printf("BEGIN_PARAMS\n"); currPos += yyleng;}
-"endparams" {printf("END_PARAMS\n"); currPos += yyleng;}
-"beginlocals" {printf("BEGIN_LOCALS\n"); currPos += yyleng;}
-"endlocals" {printf("END_LOCALS\n"); currPos += yyleng;}
-"beginbody" {printf("BEGIN_BODY\n"); currPos += yyleng;}
-"endbody" {printf("END_BODY\n"); currPos += yyleng;}
-"integer" {printf("INTEGER\n"); currPos += yyleng;}
-"array" {printf("ARRAY\n"); currPos += yyleng;}
-"of" {printf("OF\n"); currPos += yyleng;}
-"if" {printf("IF\n"); currPos += yyleng;}
-"then" {printf("THEN\n"); currPos += yyleng;}
-"endif" {printf("ENDIF\n"); currPos += yyleng;}
-"else" {printf("ELSE\n"); currPos += yyleng;}
-"while" {printf("WHILE\n"); currPos += yyleng;}
-"do" {printf("DO\n"); currPos += yyleng;}
-"beginloop" {printf("BEGINLOOP\n"); currPos += yyleng;}
-"endloop" {printf("ENDLOOP\n"); currPos += yyleng;}
-"continue" {printf("CONTINUE\n"); currPos += yyleng;}
-"read" {printf("READ\n"); currPos += yyleng;}
-"write" {printf("WRITE\n"); currPos += yyleng;}
-"and" {printf("AND\n"); currPos += yyleng;}
-"or" {printf("OR\n"); currPos += yyleng;}
-"not" {printf("NOT\n"); currPos += yyleng;}
-"true" {printf("TRUE\n"); currPos += yyleng;}
-"false" {printf("FALSE\n"); currPos += yyleng;}
-"return" {printf("RETURN\n"); currPos += yyleng;}
-"-" {printf("SUB\n"); currPos += yyleng;}
-"+" {printf("ADD\n"); currPos += yyleng;}
-"*" {printf("MULT\n"); currPos += yyleng;}
-"/" {printf("DIV\n"); currPos += yyleng;}
-"%" {printf("MOD\n"); currPos += yyleng;}
-"==" {printf("EQ\n"); currPos += yyleng;}
-"<>" {printf("NEQ\n"); currPos += yyleng;}
-"<" {printf("LT\n"); currPos += yyleng;}
-">" {printf("GT\n"); currPos += yyleng;}
-"<=" {printf("LTE\n"); currPos += yyleng;}
-">=" {printf("GTE\n"); currPos += yyleng;}
-";" {printf("SEMICOLON\n"); currPos += yyleng;}
-"," {printf("COMMA\n"); currPos += yyleng;}
-"(" {printf("L_PAREN\n"); currPos += yyleng;}
-")" {printf("R_PAREN\n"); currPos += yyleng;}
-"[" {printf("L_SQUARE_BRACKET\n"); currPos += yyleng;}
-"]" {printf("R_SQUARE_BRACKET\n"); currPos += yyleng;}
-":=" {printf("ASSIGN\n"); currPos += yyleng;}
-":" {printf("COLON\n"); currPos += yyleng;}
-{DIGIT}+ {printf("NUM %s\n", yytext); currPos += yyleng;}
-{LETTERS}+ {printf("IDENT %s\n", yytext); currPos += yyleng;}
-{IDENT_ERROR_BEGIN}+ printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n",line_cnt,cursor_pos,yytext);exit(0);
-{IDENT_ERROR_END}+ printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n",line_cnt,cursor_pos,yytext);exit(0);
+"function" {currPos += yyleng; return FUNCTION;}
+"beginparams" {currPos += yyleng; return BEGIN_PARAMS;}
+"endparams" {currPos += yyleng; return END_PARAMS;}
+"beginlocals" {currPos += yyleng; return BEGIN_LOCALS;}
+"endlocals" {currPos += yyleng; return END_LOCALS;}
+"beginbody" {currPos += yyleng; return BEGIN_BODY;}
+"endbody" {currPos += yyleng; return END_BODY;}
+"integer" {currPos += yyleng; return INTEGER;}
+"array" {currPos += yyleng; return ARRAY;}
+"of" {currPos += yyleng; return OF;}
+"if" {currPos += yyleng; return IF;}
+"then" {currPos += yyleng; return THEN;}
+"endif" {currPos += yyleng; return ENDIF;}
+"else" {currPos += yyleng; return ELSE;}
+"while" {currPos += yyleng; return WHILE;}
+"do" {currPos += yyleng; return DO;}
+"beginloop" {currPos += yyleng; return BEGINLOOP;}
+"endloop" {currPos += yyleng; return ENDLOOP;}
+"continue" {currPos += yyleng; return CONTINUE;}
+"read" {currPos += yyleng; return READ;}
+"write" {currPos += yyleng; return WRITE;}
+"and" {currPos += yyleng; return AND;}
+"or" {currPos += yyleng; return OR;}
+"not" {currPos += yyleng; return NOT;}
+"true" {currPos += yyleng; return TRUE;}
+"false" {currPos += yyleng; return FALSE;}
+"return" {currPos += yyleng; return RETURN;}
+
+"-" {currPos += yyleng; return SUB;}
+"+" {currPos += yyleng; return ADD;}
+"*" {currPos += yyleng; return MULT;}
+"/" {currPos += yyleng; return DIV;}
+"%" {currPos += yyleng; return MOD;}
+"==" {currPos += yyleng; return EQ;}
+"<>" {currPos += yyleng; return NEQ;}
+"<" {currPos += yyleng; return LT;}
+">" {currPos += yyleng; return GT;}
+"<=" {currPos += yyleng; return LTE;}
+">=" {currPos += yyleng; return GTE;}
+";" {currPos += yyleng; return SEMICOLON;}
+"," {currPos += yyleng; return COMMA;}
+"(" {currPos += yyleng; return L_PAREN;}
+")" {currPos += yyleng; return R_PAREN;}
+"[" {currPos += yyleng; return L_SQUARE_BRACKET;}
+"]" {currPos += yyleng; return R_SQUARE_BRACKET;}
+":=" {currPos += yyleng; return ASSIGN;}
+":" {currPos += yyleng; return COLON;}
+
+[ ]+ {currPos += yyleng;}
+[\t]+ {currPos += yyleng;}
+"\n"+ {currLine++; currPos = 1;}
+(##).* {currLine++; currPos = 1;}
+
+{DIGIT}+ {currPos += yyleng; return NUMBER;}
+
+("_"[a-zA-Z0-9_]*)|({DIGIT}[a-zA-Z0-9_]*) {printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currPos, currLine, yytext); exit(0);}
+([a-zA-Z0-9_]*"_") {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currPos, currLine, yytext); exit(0);}
+
+[a-zA-Z0-9_]*[a-zA-Z0-9]* {currPos += yyleng; return IDENT;}
 
 %%
-
-main() {
-	printf("Expression:\n");
-	yylex();
-}
+/*
+int main(int argc, char **argv) {
+    if ((argc > 1) && ((yyin = fopen(argv[1],"r")) == NULL))
+    {
+        printf("syntax: %s filename\n", argv[0]);
+        return 1;
+    }
+    yyparse();
+    return 0;
+}*/
