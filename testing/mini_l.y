@@ -811,9 +811,9 @@ int main(int argc, char **argv) {
     }
     
     yyparse();
-    ofstreaem file;
+    ofstream file;
     file.open("output.mil");
-    file << mil_code.str()
+    file << mil_code->str();
     file.close();
     
     return 0;
