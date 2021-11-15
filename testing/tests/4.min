@@ -1,0 +1,12 @@
+## This tests if a variable is defined more than once
+
+function test;
+beginparams
+endparams
+beginlocals
+  nn : integer;
+  nn : integer;
+endlocals
+beginbody
+  nn := 10;
+endbody

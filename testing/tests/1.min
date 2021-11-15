@@ -1,0 +1,12 @@
+## This tests use of variables before declaration
+
+function main;
+beginparams
+endparams
+
+beginlocals
+  nn : integer;
+endlocals
+beginbody	## main program
+  n := 10;
+endbody

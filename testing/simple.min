@@ -1,0 +1,80 @@
+## This program only tests for correct statements
+## it isn't used to test semantic errors
+function test;
+beginparams
+l : integer;
+endparams
+beginlocals
+endlocals
+beginbody
+    l := 1;
+    return l + 1;
+endbody
+
+function main;
+beginparams
+x : integer;
+a, b : integer;
+c : array [21] of integer;
+d, e : array [23] of integer;
+endparams
+beginlocals
+n : integer;
+endlocals
+beginbody	## main program
+		## test assignment
+		x := 5;
+
+                ## test if statement
+		
+		if x >= 5 then
+		   x := 6 ;
+		else
+		   if x == 6 then
+		       x := 7;
+		   endif;
+		endif;
+
+		## test do while loop
+		do
+			beginloop
+				c[a] := a;
+				a := a + 1;
+				read x;
+				read a, e[1], b;
+			endloop
+		while a < x;
+		
+                b := 0;
+
+		while b < x
+			beginloop
+				b := b + 1;
+				continue;
+		endloop;
+
+		## test read and write vars
+		read x;
+		write x;
+
+		## test add and subtract
+		x := x - 1 + (x + 5);
+
+		## test parenth
+		x := (x - 1) + x + 5;
+		x := ((x - 1) + x) + 5;
+
+		## test function call
+		x := test(x);
+
+		## test unary minus
+		a := -a;
+		b := -1;
+
+		## test array access with expression
+		a := 1;
+
+		## test -(expression)
+		a := -(a*a);
+
+endbody

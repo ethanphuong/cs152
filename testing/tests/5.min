@@ -1,0 +1,11 @@
+## This tests if a variables name as a keyword
+
+function test;
+beginparams
+endparams
+beginlocals
+  foreach : integer;
+  continue : integer;
+endlocals
+beginbody
+endbody

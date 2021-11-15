@@ -1,0 +1,16 @@
+## This tests continue outside a loop
+
+function main;
+beginparams
+endparams
+beginlocals
+  a : array [10] of integer;
+endlocals
+beginbody	## main program
+    a[1] := 1;
+    while a[1] < 10
+    beginloop
+	a[1] := a[1] + 1;
+    endloop;
+    continue;
+endbody
