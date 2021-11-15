@@ -58,13 +58,16 @@ stack<Loop> loop_stack;
 %type <str_val> IDENT
 
 
-%type <NonTerminal> program
-%type <Terminal> decl_loop stmt_loop function function_2 declaration declaration_2 declaration_3 statement  statement_1 statement_2   statement_21 statement_3   statement_4   statement_5   statement_51  statement_6   statement_61  bool_exp      bool_exp2     rel_and_exp   rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        term_3        term_31       term_32       var           var_2         b_loop b_func
+%type <NonTerminal> prog_start
+%type <Terminal> decl_loop stmt_loop function function_2 declaration declaration_2 declaration_3 statement  statement_1 statement_2   
+statement_21 statement_3   statement_4   statement_5   statement_51  statement_6   statement_61  bool_exp      bool_exp2     rel_and_exp   
+rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        
+term_3        term_31       term_32       var           var_2         b_loop b_func
 
 
 %%
 
-program:    function program {
+prog_start:    function prog_start {
                 $$.code = $1.code;
                 *($$.code) << $2.code->str();
                 if(!no_main){
