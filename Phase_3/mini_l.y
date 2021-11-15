@@ -368,7 +368,7 @@ enter_loop:         {
                     loop.parent = $$.parent;
                     loop.begin = $$.begin;
                     loop.end = $$.end;
-                    loop_stack.push(l);
+                    loop_stack.push(loop);
                 };
 
 read_vars:   COMMA var read_vars {
