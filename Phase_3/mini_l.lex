@@ -6,6 +6,7 @@ IDENT_ERROR_END {LETTERS}({LETTERS}|{DIGIT}|[_])*([_])+
 
 %{
 int currPos = 0;
+int line = 0;
 %}
 
 %%
