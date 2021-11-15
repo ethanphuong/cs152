@@ -40,6 +40,7 @@ stack<Loop> loop_stack;
     }NonTerminal;
 
     struct Terminal Terminal;
+
 }
 
 %error-verbose
@@ -57,21 +58,19 @@ stack<Loop> loop_stack;
 %type <str_val> IDENT
 
 
-%type <NonTerminal> prog_start
-%type <Terminal> declarations statements function function_1 function_2 declaration declaration_2 declaration_3 statement  
-statement_1 statement_2   statement_21 statement_3   statement_4   statement_5   statement_51  statement_6   statement_61  bool_exp      
-bool_exp2     rel_and_exp   rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     
-mult_expr_2   term          term_2        term_3        term_31       term_32       var           var_2         b_loop
+%type <NonTerminal> program
+%type <Terminal> decl_loop stmt_loop function function_2 declaration declaration_2 declaration_3 statement  statement_1 statement_2   statement_21 statement_3   statement_4   statement_5   statement_51  statement_6   statement_61  bool_exp      bool_exp2     rel_and_exp   rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        term_3        term_31       term_32       var           var_2         b_loop b_func
 
 
 %%
 
-prog_start:    function prog_start {
+program:    function program {
                 $$.code = $1.code;
                 *($$.code) << $2.code->str();
                 if(!no_main){
                     yyerror("ERROR: main function not defined.");
                 }
+
                 all_code = $$.code;
               } 
             | {
@@ -79,7 +78,7 @@ prog_start:    function prog_start {
               }
             ;
 
-function:   FUNCTION function_1 SEMICOLON BEGIN_PARAMS decl_loop END_PARAMS BEGIN_LOCALS decl_loop END_LOCALS BEGIN_BODY statement SEMICOLON function_2 {
+function:   FUNCTION b_func SEMICOLON BEGIN_PARAMS decl_loop END_PARAMS BEGIN_LOCALS decl_loop END_LOCALS BEGIN_BODY statement SEMICOLON function_2 {         
                 $$.code = new stringstream(); 
                 string tmp = *$2.place;
                 if( tmp.compare("main") == 0){
@@ -99,7 +98,7 @@ function:   FUNCTION function_1 SEMICOLON BEGIN_PARAMS decl_loop END_PARAMS BEGI
                  *($$.code) << $11.code->str() << $13.code->str();
             }
             ;
-function_1: IDENT {
+b_func: IDENT {
             string tmp = $1;
             Var myf = Var();
             myf.type = FUNC;
@@ -120,7 +119,7 @@ function_2: statement SEMICOLON function_2 {
               }
             ;
 
-declarations:  declaration SEMICOLON declarations {
+decl_loop:  declaration SEMICOLON decl_loop {
                 $$.code = $1.code;
                 $$.vars = $1.vars;
                 for( int i = 0; i < $3.vars->size(); ++i){
@@ -134,7 +133,7 @@ declarations:  declaration SEMICOLON declarations {
               }
             ;
 
-statements:  statement SEMICOLON statements {
+stmt_loop:  statement SEMICOLON stmt_loop {
                 $$.code = $1.code;
                 *($$.code) << $3.code->str();
               } 
@@ -299,7 +298,7 @@ statement_1:    var ASSIGN expression{
                 }
                 ;
 
-statement_2:    IF bool_exp THEN statements statement_21 ENDIF{
+statement_2:    IF bool_exp THEN stmt_loop statement_21 ENDIF{
                     $$.code = new stringstream();
                     $$.begin = new_label();
                     $$.end = new_label();
@@ -320,13 +319,13 @@ statement_21:   {
                     $$.code = new stringstream();
                     $$.begin = NULL;
                 }
-                | ELSE statements{
+                | ELSE stmt_loop{
                     $$.code = $2.code;
                     $$.begin = new_label();
                 }
                 ;
 
-statement_3:    WHILE bool_exp b_loop BEGINLOOP statements ENDLOOP{
+statement_3:    WHILE bool_exp b_loop BEGINLOOP stmt_loop ENDLOOP{
                     $$.code = new stringstream();
                     $$.begin = $3.begin;
                     $$.parent = $3.parent;
@@ -429,7 +428,7 @@ bool_exp:       rel_and_exp bool_exp2{
                 }
                 ;
 
-bool_exp2:      OR rel_and_exp bool_exp2{                
+bool_exp2:      OR rel_and_exp bool_exp2{
                     expression_code($$,$2,$3,"||");
                 }
                 |{
@@ -580,7 +579,7 @@ mult_expr_2:    MULT term mult_expr_2{
                 | DIV term mult_expr_2{
                     expression_code($$,$2,$3,"/");
                   }
-                | MOD term mult_expr_2{
+                | MOD term mult_expr_2{          
                     expression_code($$,$2,$3,"%");
                   }
                 |{
@@ -647,6 +646,7 @@ term_32:        COMMA term_31{
                   }
 
 var:            IDENT var_2{
+
                     $$.code = $2.code;
                     $$.type = $2.type;
                     string tmp = $1;
@@ -745,7 +745,7 @@ string * new_label(){
     templ++;
     return t;
 }
- 
+                   
 void expression_code( Terminal &DD, Terminal D2, Terminal D3, string op){
     DD.code = D2.code;
     *(DD.code) << D3.code->str();
@@ -818,4 +818,3 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-
