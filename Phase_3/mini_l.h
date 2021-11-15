@@ -1,12 +1,9 @@
-/* heading.h */
-#ifndef _heading_h_
-#define _heading_h_
+#ifndef _minil_h_
+#define _minil_h_
 
 #define YY_NO_UNPUT
 
 #include <iostream>
-
-/*data structures*/
 #include <vector>
 #include <stack>
 #include <map>
@@ -41,24 +38,18 @@ enum Type {INT,INT_ARR,FUNC};
 
     struct secondStruct{
        stringstream *code;
-       //location
        string *place;
        string *value;
        string *offset;
-       // branches
        string *op;
        string *begin;
        string *parent;
        string *end;
-       // type
-       //uint val;
        Type type;
        int length;
        string *index;
-       // idents and vars
        vector<string> *ids;
        vector<Var> *vars; 
     };
-
 
 #endif
