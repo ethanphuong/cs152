@@ -57,13 +57,6 @@ stack<Loop> loop_stack;
 %type <int_val> NUMBER
 %type <str_val> IDENT
 
-
-%type <NonTerminal> prog_start
-%type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement  assi_expr  read_vars  write_vars  bool_expr  
-bool_expr_continue     rel_expr
-rel_expr_continute rel_exprs   rel_exprs_continue comp          expression    expressions  mult_expr     mult_exprs   term          terms        
-termss        termsss       termssss       var           var_2         enter_loop
-
 %%
 
 prog_start:    function prog_start {
@@ -617,7 +610,7 @@ termssss:        COMMA termsss{
                     $$.code = new stringstream();
                   }
 
-var:            IDENT var_2{
+var:            IDENT vars{
 
                     $$.code = $2.code;
                     $$.type = $2.type;
@@ -650,7 +643,7 @@ var:            IDENT var_2{
                 }
                 ;
 
-var_2:          L_SQUARE_BRACKET expression R_SQUARE_BRACKET{
+vars:          L_SQUARE_BRACKET expression R_SQUARE_BRACKET{
                     $$.code = $2.code;
                     $$.place = NULL;
                     $$.index = $2.place;
