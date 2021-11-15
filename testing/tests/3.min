@@ -1,0 +1,11 @@
+## This tests if no main function is defined
+
+function test;
+beginparams
+endparams
+beginlocals
+  nn : integer;
+endlocals
+beginbody
+  nn := 10;
+endbody

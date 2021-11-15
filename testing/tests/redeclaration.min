@@ -1,0 +1,17 @@
+function main;
+beginparams
+endparams
+
+beginlocals
+
+n : integer;
+a : array[1000] of integer;
+i, j : integer;
+x, sqrt_n : integer;
+n : integer;
+a : array[10] of integer;
+
+endlocals
+beginbody	## main program
+  n := 10;
+endbody

@@ -1,0 +1,13 @@
+## This tests foregetting to specify an array index when using an array
+## variable
+
+function main;
+beginparams
+endparams
+beginlocals
+  n : array [10] of integer;
+endlocals
+beginbody	## main program
+  n := 10;
+  n[1] := n;
+endbody

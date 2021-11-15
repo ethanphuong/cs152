@@ -1,0 +1,12 @@
+## This tests specifying an array index when using a regular variable
+
+function main;
+beginparams
+endparams
+beginlocals
+  n : integer;
+endlocals
+beginbody	## main program
+  n[1] := 10;
+  n := n[1];
+endbody

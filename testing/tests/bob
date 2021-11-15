@@ -1,0 +1,12 @@
+## This tests declaring variables the same name as the program name
+
+function main;
+beginparams
+endparams
+
+beginlocals
+  bob : integer;
+endlocals
+beginbody	## main program
+  bob := 10;
+endbody

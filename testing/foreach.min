@@ -1,0 +1,20 @@
+function main;
+beginparams
+endparams
+beginlocals
+	n : array[100] of integer;
+	i : integer;
+endlocals
+beginbody
+	i := 0;
+	while i < 100
+	beginloop
+          n[i] := 100 - i;
+	  i := i + 1;
+	endloop;
+
+	foreach x in n
+	beginloop
+	  write x;
+	endloop;
+endbody

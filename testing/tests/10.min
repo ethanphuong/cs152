@@ -1,0 +1,20 @@
+## This tests use of undeclared variable in foreach
+## and use of scalar variable in foreach
+
+function main;
+beginparams
+endparams
+beginlocals
+  a : array [10] of integer;
+  b : integer;
+endlocals
+beginbody	## main program
+    foreach x in c
+    beginloop
+       write x;
+    endloop;
+    foreach y in b
+    beginloop
+       write y;
+    endloop;
+endbody
