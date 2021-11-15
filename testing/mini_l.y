@@ -18,7 +18,6 @@ string declaration_string(string *s);
 void code(secondStruct &first, secondStruct second, secondStruct third, string op);
 void push(string name, Var v);
 void checks(string name);
-bool bool2 = false;
 bool check(string name);
 ;
 
@@ -56,11 +55,6 @@ bool_expr_continue rel_expr rel_expr_continute rel_exprs rel_exprs_continue comp
 prog_start:    function prog_start {
                 $$.code = $1.code;
                 *($$.code) << $2.code->str();
-                if(!bool2)
-                {
-                    yyerror("ERROR: main function not defined.");
-                }
-
                 mil_code = $$.code;
               } 
             | {
@@ -70,10 +64,7 @@ prog_start:    function prog_start {
 function:   FUNCTION functions SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statement SEMICOLON functions_1 {         
                 $$.code = new stringstream(); 
                 string tmp = *$2.place;
-                if( tmp.compare("main") == 0)
-                {
-                    bool2 = true;
-                }
+
                 *($$.code)  << "func " << tmp << "\n" << $5.code->str() << $8.code->str();
                 for(int i = 0; i < $5.vars->size(); ++i)
                 {
