@@ -35,8 +35,6 @@ stack<Loop> loop_stack;
     int       int_val;
     char str_val[256];
 
-    //enum Type {INT, INT_ARR};
-
     struct {
         stringstream *code;
     }NonTerminal;
@@ -231,14 +229,12 @@ declaration_2:  COMMA IDENT declaration_2 {
                 ;
 
 declaration_3:  ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF{
-                    //printf("declaration_3 -> ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF\n");
                     $$.code = new stringstream();
                     $$.vars = new vector<Var>();
                     $$.type = INT_ARR;
                     $$.length = $3;
                 }
                 | {
-                    //printf("declaration_3 -> EPSILON\n");
                     $$.code = new stringstream();
                     $$.vars = new vector<Var>();
                     $$.type = INT;
