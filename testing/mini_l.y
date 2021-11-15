@@ -59,8 +59,8 @@ stack<Loop> loop_stack;
 
 
 %type <NonTerminal> prog_start
-%type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement statement_2   
-statement_21 statement_3   statement_4   statement_5   statement_51  statement_6   statement_61  bool_exp      bool_exp2     rel_and_exp   
+%type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement   
+statement_21  statement_4   statement_5   statement_51  statement_6   statement_61  bool_exp      bool_exp2     rel_and_exp   
 rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        
 term_3        term_31       term_32       var           var_2         b_loop 
 
@@ -265,11 +265,30 @@ statement:          var ASSIGN expression{
                         yyerror("Error: expression is null.");
                     }
                 }
-                | statement_2 {
-                    $$.code = $1.code;
+                | IF bool_exp THEN statements statement_21 ENDIF{
+                    $$.code = new stringstream();
+                    $$.begin = new_label();
+                    $$.end = new_label();
+                    *($$.code) << $2.code->str() << "?:= " << *$$.begin << ", " <<  *$2.place << "\n";
+                    if($5.begin != NULL){                       
+                        *($$.code) << go_to($5.begin); 
+                        *($$.code) << dec_label($$.begin)  << $4.code->str() << go_to($$.end);
+                        *($$.code) << dec_label($5.begin) << $5.code->str();
+                    }
+                    else{
+                        *($$.code) << go_to($$.end)<< dec_label($$.begin)  << $4.code->str();
+                    }
+                    *($$.code) << dec_label($$.end);
                 }
-                | statement_3 {
-                    $$.code = $1.code;
+                | WHILE bool_exp b_loop BEGINLOOP statements ENDLOOP{
+                    $$.code = new stringstream();
+                    $$.begin = $3.begin;
+                    $$.parent = $3.parent;
+                    $$.end = $3.end;
+                    *($$.code) << dec_label($$.parent) << $2.code->str() << "?:= " << *$$.begin << ", " << *$2.place << "\n" 
+                    << go_to($$.end) << dec_label($$.begin) << $5.code->str() << go_to($$.parent) << dec_label($$.end);
+                    loop_stack.pop();
+
                 }
                 | statement_4 {
                     $$.code = $1.code;
@@ -296,23 +315,6 @@ statement:          var ASSIGN expression{
                     *($$.code) << "ret " << *$$.place << "\n";
                 }
 
-statement_2:    IF bool_exp THEN statements statement_21 ENDIF{
-                    $$.code = new stringstream();
-                    $$.begin = new_label();
-                    $$.end = new_label();
-                    *($$.code) << $2.code->str() << "?:= " << *$$.begin << ", " <<  *$2.place << "\n";
-                    if($5.begin != NULL){                       
-                        *($$.code) << go_to($5.begin); 
-                        *($$.code) << dec_label($$.begin)  << $4.code->str() << go_to($$.end);
-                        *($$.code) << dec_label($5.begin) << $5.code->str();
-                    }
-                    else{
-                        *($$.code) << go_to($$.end)<< dec_label($$.begin)  << $4.code->str();
-                    }
-                    *($$.code) << dec_label($$.end);
-                }
-                ;
-
 statement_21:   {
                     $$.code = new stringstream();
                     $$.begin = NULL;
@@ -320,18 +322,6 @@ statement_21:   {
                 | ELSE statements{
                     $$.code = $2.code;
                     $$.begin = new_label();
-                }
-                ;
-
-statement_3:    WHILE bool_exp b_loop BEGINLOOP statements ENDLOOP{
-                    $$.code = new stringstream();
-                    $$.begin = $3.begin;
-                    $$.parent = $3.parent;
-                    $$.end = $3.end;
-                    *($$.code) << dec_label($$.parent) << $2.code->str() << "?:= " << *$$.begin << ", " << *$2.place << "\n" 
-                    << go_to($$.end) << dec_label($$.begin) << $5.code->str() << go_to($$.parent) << dec_label($$.end);
-                    loop_stack.pop();
-
                 }
                 ;
 
