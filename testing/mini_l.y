@@ -61,8 +61,8 @@ stack<Loop> loop_stack;
 %type <NonTerminal> prog_start
 %type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement  assi_expr  read_vars  write_vars  bool_expr  
 bool_expr_continue     rel_expr
-rel_expr_continute rel_exprs   rel_exprs_continue comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        
-term_3        term_31       term_32       var           var_2         enter_loop
+rel_expr_continute rel_exprs   rel_exprs_continue comp          expression    expressions  mult_expr     mult_exprs   term          terms        
+terms        termss       termsss       var           var_2         enter_loop
 
 %%
 
@@ -500,7 +500,7 @@ comp:           EQ{
                   }
                 ;
 
-expression:     mult_expr expression_2{
+expression:     mult_expr expressions{
                     $$.code = $1.code;
                     *($$.code) << $2.code->str();
                     if($2.op != NULL && $2.place != NULL)
@@ -516,10 +516,10 @@ expression:     mult_expr expression_2{
                   }
                 ;
 
-expression_2:   ADD mult_expr expression_2 {
+expressions:   ADD mult_expr expressions {
                     expression_code($$,$2,$3,"+");
                   }
-                | SUB mult_expr expression_2{
+                | SUB mult_expr expressions{
                     expression_code($$,$2,$3,"-");
                   }
                 | {
@@ -528,7 +528,7 @@ expression_2:   ADD mult_expr expression_2 {
                   }
                 ;
 
-mult_expr:      term mult_expr_2{
+mult_expr:      term mult_exprs{
                     $$.code = $1.code;
                     *($$.code) << $2.code->str();
                     if($2.op != NULL && $2.place != NULL)
@@ -544,14 +544,14 @@ mult_expr:      term mult_expr_2{
                 ;
 
 
-mult_expr_2:    MULT term mult_expr_2{
+mult_exprs:    MULT term mult_exprs{
                     expression_code($$,$2,$3,"*");
 
                   }
-                | DIV term mult_expr_2{
+                | DIV term mult_exprs{
                     expression_code($$,$2,$3,"/");
                   }
-                | MOD term mult_expr_2{          
+                | MOD term mult_exprs{          
                     expression_code($$,$2,$3,"%");
                   }
                 |{
@@ -560,23 +560,23 @@ mult_expr_2:    MULT term mult_expr_2{
                  }
                 ;
 
-term:           SUB term_2{
+term:           SUB terms{
                     $$.code = $2.code;
                     $$.place = new_temp();
                     string tmp = "-1";
                     *($$.code)<< dec_temp($$.place) << gen_code($$.place, "*",$2.place, &tmp );
                   }
-                | term_2{
+                | terms{
                     $$.code = $1.code;
                     $$.place = $1.place;
                   }
-                | term_3{
+                | termss{
                     $$.code = $1.code;
                     $$.place = $1.place;
                   }
                 ;
 
-term_2:         var{
+terms:         var{
                     $$.code = $1.code;
                     $$.place= $1.place;
                     $$.index = $1.index;
@@ -592,7 +592,7 @@ term_2:         var{
                   }
                 ;
 
-term_3:         IDENT L_PAREN term_31 R_PAREN{
+termss:         IDENT L_PAREN termsss R_PAREN{
                     $$.code = $3.code;
                     $$.place = new_temp();
                     *($$.code) << dec_temp($$.place)<< "call " << $1 << ", " << *$$.place << "\n";
@@ -601,7 +601,7 @@ term_3:         IDENT L_PAREN term_31 R_PAREN{
                 }
                 ;
 
-term_31:        expression term_32{
+termsss:        expression termssss{
                     $$.code = $1.code;
                     *($$.code) << $2.code->str();
                     *($$.code) << "param " << *$1.place << "\n";
@@ -610,7 +610,7 @@ term_31:        expression term_32{
                     $$.code = new stringstream(); 
                   }
                 ;
-term_32:        COMMA term_31{
+termssss:        COMMA termsss{
                     $$.code = $2.code;
                 } 
                 | {
