@@ -793,7 +793,6 @@ int yyerror(const char *s)
     success = false;
     printf(">>> Line %d, position %d: %s\n",line_cnt,cursor_pos,s);
     return -1;
-    //return yyerror(string(s));
 }
 
 
