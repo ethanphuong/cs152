@@ -350,7 +350,7 @@ bool_expr:       rel_expr bool_expr_continue{
                     *($$.code) << $2.code->str();
                     if($2.op != NULL && $2.place != NULL)
                     {                        
-                        $$.place = new_temp();
+                        $$.place = new_string();
                        *($$.code) << dec_temp($$.place) << print_code($$.place, *$2.op, $1.place, $2.place);
                     }
                     else{
@@ -374,7 +374,7 @@ rel_expr:    rel_exprs rel_expr_continute{
                     *($$.code) << $2.code->str();
                     if($2.op != NULL && $2.place != NULL)
                     {                        
-                        $$.place = new_temp();
+                        $$.place = new_string();
                        *($$.code) << dec_temp($$.place) << print_code($$.place, *$2.op, $1.place, $2.place);
                     }
                     else{
@@ -400,7 +400,7 @@ rel_exprs:   rel_exprs_continue{
                 }
                 | NOT rel_exprs_continue{
                     $$.code = $2.code;
-                    $$.place = new_temp();
+                    $$.place = new_string();
                     *($$.code) << dec_temp($$.place) << print_code($$.place, "!", $2.place, NULL);
                 }
                 ;
@@ -409,7 +409,7 @@ rel_exprs_continue: expression comp expression{
                     $$.code = $1.code;
                     *($$.code) << $2.code->str();
                     *($$.code) << $3.code->str();
-                    $$.place = new_temp();
+                    $$.place = new_string();
                     *($$.code)<< dec_temp($$.place) << print_code($$.place, *$2.op, $1.place, $3.place);
                 }
                 | TRUE{                    
