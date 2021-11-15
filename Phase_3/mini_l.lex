@@ -70,11 +70,11 @@ int currLine = 1;
 (##).* {currLine++; currPos = 1;}
 
 {DIGIT}+ {currPos += yyleng; return NUMBER;}
-{IDENT_DIG}	        yylval.number = atoi(yytext); return(NUMBER); cursor_pos += yyleng; 
-{IDENT_ERR_START}   printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n",line_cnt,cursor_pos,yytext);exit(0);
-{IDENT_ERR_END}	    printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n",line_cnt,cursor_pos,yytext);exit(0);
-{IDENT_VAR}	        strcpy(yylval.buf,yytext);return(IDENT);cursor_pos += yyleng;  
-.		            printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n",line_cnt,cursor_pos,yytext);exit(0);
+{IDENT_DIG}	        yylval.number = atoi(yytext); return(NUMBER); currPos += yyleng; 
+{IDENT_ERR_START}   printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n",currLine,currPos,yytext);exit(0);
+{IDENT_ERR_END}	    printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n",currLine,currPos,yytext);exit(0);
+{IDENT_VAR}	        strcpy(yylval.buf,yytext);return(IDENT);currPos += yyleng;  
+.		            printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n",currLine,currPos,yytext);exit(0);
 %%
 /*
 int main(int argc, char **argv) {
