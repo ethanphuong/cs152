@@ -59,10 +59,9 @@ stack<Loop> loop_stack;
 
 
 %type <NonTerminal> prog_start
-%type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement  assi_expr  statement_51  statement_61  bool_exp      bool_exp2     rel_and_exp   
+%type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement  assi_expr  read_vars  write_vars  bool_exp      bool_exp2     rel_and_exp   
 rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        
-term_3        term_31       term_32       var           var_2         b_loop 
-
+term_3        term_31       term_32       var           var_2         enter_loop
 
 %%
 
@@ -279,7 +278,7 @@ statement:          var ASSIGN expression{
                     }
                     *($$.code) << dec_label($$.end);
                 }
-                | WHILE bool_exp b_loop BEGINLOOP statements ENDLOOP{
+                | WHILE bool_exp enter_loop BEGINLOOP statements ENDLOOP{
                     $$.code = new stringstream();
                     $$.begin = $3.begin;
                     $$.parent = $3.parent;
@@ -289,7 +288,7 @@ statement:          var ASSIGN expression{
                     loop_stack.pop();
 
                 }
-                | DO b_loop BEGINLOOP statements ENDLOOP WHILE bool_exp{
+                | DO enter_loop BEGINLOOP statements ENDLOOP WHILE bool_exp{
                     $$.code = new stringstream();
                     $$.begin = $2.begin;
                     $$.parent = $2.parent;
@@ -297,7 +296,7 @@ statement:          var ASSIGN expression{
                     *($$.code) << dec_label($$.begin) << $4.code->str() << dec_label($$.parent) << $7.code->str() << "?:= " << *$$.begin << ", " << *$7.place << "\n" << dec_label($$.end);
                     loop_stack.pop();
                 }
-                | READ var statement_51{
+                | READ var read_vars{
                     $$.code = $2.code;
                     if($2.type == INT){
                        *($$.code) << ".< " << *$2.place << "\n"; 
@@ -307,7 +306,7 @@ statement:          var ASSIGN expression{
                     }
                     *($$.code) << $3.code->str();
                 }
-                | WRITE var statement_61{
+                | WRITE var write_vars {
                     $$.code = $2.code;
                     if($2.type == INT){
                        *($$.code) << ".> " << *$2.place << "\n"; 
@@ -343,7 +342,7 @@ assi_expr:   {
                 }
                 ;
 
-b_loop:         {
+enter_loop:         {
                     $$.code = new stringstream();
                     $$.begin = new_label();
                     $$.parent = new_label();
@@ -355,7 +354,7 @@ b_loop:         {
                     loop_stack.push(l);
                 };
 
-statement_51:   COMMA var statement_51 {
+read_vars:   COMMA var read_vars {
                     $$.code = $2.code;
                     if($2.type == INT){
                        *($$.code) << ".< " << *$2.place << "\n"; 
@@ -370,7 +369,7 @@ statement_51:   COMMA var statement_51 {
                   }
                 ;
 
-statement_61:   COMMA var statement_61{
+write_vars:   COMMA var write_vars{
                     $$.code = $2.code;
                     if($2.type == INT){
                        *($$.code) << ".> " << *$2.place << "\n"; 
