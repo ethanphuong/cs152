@@ -7,7 +7,7 @@ IDENT_VAR_ERR	()({LETTER}|{DIGIT}|[_])*[_]+
  */
 
 %{
-#include "heading.h"
+#include "mini_l.h"
 #include "y.tab.h"
 #include <string.h>
 
