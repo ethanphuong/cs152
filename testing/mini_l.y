@@ -804,8 +804,8 @@ int yyerror(const char *s) {
 int main(int argc, char **argv) {
 
     if (argc > 1) {
-        yyin = fopen(argv[1], "r");
-        if (yyin == NULL) {
+        instream = fopen(argv[1], "r");
+        if (instream == NULL) {
             printf("Syntax: %s filename\n", argv[0]);
         }
     }
