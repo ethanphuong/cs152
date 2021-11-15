@@ -2,7 +2,6 @@
 /* calc.y */
 
 %{
-#include "heading.h"
 #define YY_NO_UNPUT
 
 #include <iostream>
@@ -57,7 +56,6 @@ stack<Loop> loop_stack;
 
     struct Terminal Terminal;
 
-}
     struct Var{
         
         string *place;
@@ -96,6 +94,7 @@ stack<Loop> loop_stack;
        vector<string> *ids;
        vector<Var> *vars; 
     };
+}
 
 %error-verbose
 
