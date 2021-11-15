@@ -63,9 +63,9 @@ prog_start:    function prog_start {
 
 function:   FUNCTION functions SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statement SEMICOLON functions_1 {         
                 $$.code = new stringstream(); 
-                string tmp = *$2.place;
+                string temp = *$2.place;
 
-                *($$.code)  << "func " << tmp << "\n" << $5.code->str() << $8.code->str();
+                *($$.code)  << "func " << temp << "\n" << $5.code->str() << $8.code->str();
                 for(int i = 0; i < $5.vars->size(); ++i)
                 {
                     if((*$5.vars)[i].type == INT_ARR)
@@ -83,15 +83,15 @@ function:   FUNCTION functions SEMICOLON BEGIN_PARAMS declarations END_PARAMS BE
                  *($$.code) << $11.code->str() << $13.code->str();
             };
 functions: IDENT {
-            string tmp = $1;
+            string temp = $1;
             Var myf = Var();
             myf.type = FUNC;
-            if(!check(tmp))
+            if(!check(temp))
             {
-                push(tmp,myf); 
+                push(temp,myf); 
             }
             $$.place = new string();
-            *$$.place = tmp;
+            *$$.place = temp;
         };
 
 functions_1: statement SEMICOLON functions_1 {
@@ -144,7 +144,7 @@ declaration:    IDENT declarations_1 {
                     {
                         if($2.length <= 0)
                         {
-                            yyerror("ERROR: invalid array size 0 or less");
+                            yyerror("Error: invalid array size 0 or less");
                         }
                         *($$.code) << ".[] " << $1 << ", " << $2.length << "\n";
                         string s = $1;
@@ -152,8 +152,8 @@ declaration:    IDENT declarations_1 {
                             push(s,var);
                         }
                         else{
-                            string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
-                            yyerror(tmp.c_str());
+                            string temp = "Error: Symbol \"" + s + "\" is multiply-defined";
+                            yyerror(temp.c_str());
                         }
                     }
 
@@ -167,13 +167,13 @@ declaration:    IDENT declarations_1 {
                         }
                         else
                         {
-                            string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
-                            yyerror(tmp.c_str());
+                            string temp = "Error: Symbol \"" + s + "\" is multiply-defined";
+                            yyerror(temp.c_str());
                         }
                     }
                     else
                     {
-                            yyerror("ERROR: invalid type");
+                            yyerror("Error: invalid type");
                     }
                 };
 
@@ -198,8 +198,8 @@ declarations_1:  COMMA IDENT declarations_1 {
                         }
                         else
                         {
-                            string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
-                            yyerror(tmp.c_str());
+                            string temp = "Error: Symbol \"" + s + "\" is multiply-defined";
+                            yyerror(temp.c_str());
                         }
                     }
                     else if($3.type == INT)
@@ -211,8 +211,8 @@ declarations_1:  COMMA IDENT declarations_1 {
                             push(s,var);
                         }
                         else{
-                            string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
-                            yyerror(tmp.c_str());
+                            string temp = "Error: Symbol \"" + s + "\" is multiply-defined";
+                            yyerror(temp.c_str());
                         }
                     }
                 }
@@ -255,9 +255,9 @@ statement:          var ASSIGN expression {
                     }
                     else if($1.type == INT_ARR && $3.type == INT_ARR)
                     {
-                        string *tmp = new_string();
-                        *($$.code) << declaration_string(tmp) << print_code(tmp, "=[]", $3.place, $3.index);
-                        *($$.code) << print_code($1.value, "[]=", $1.index, tmp);
+                        string *temp = new_string();
+                        *($$.code) << declaration_string(temp) << print_code(temp, "=[]", $3.place, $3.index);
+                        *($$.code) << print_code($1.value, "[]=", $1.index, temp);
                     }
                     else
                     {
@@ -333,7 +333,7 @@ statement:          var ASSIGN expression {
                     $$.code = new stringstream();
                     if(loop_stack.size() <= 0)
                     {
-                        yyerror("ERROR: continue statement not within a loop");
+                        yyerror("Error: continue statement not within a loop");
                     }
                     else
                     {
@@ -587,8 +587,8 @@ mult_exprs:    MULT term mult_exprs {
 term:           SUB terms {
                     $$.code = $2.code;
                     $$.place = new_string();
-                    string tmp = "-1";
-                    *($$.code)<< declaration_string($$.place) << print_code($$.place, "*",$2.place, &tmp );
+                    string temp = "-1";
+                    *($$.code)<< declaration_string($$.place) << print_code($$.place, "*",$2.place, &temp );
                 }
                 | terms
                 {
@@ -622,8 +622,8 @@ termss:         IDENT L_PAREN termsss R_PAREN {
                     $$.code = $3.code;
                     $$.place = new_string();
                     *($$.code) << declaration_string($$.place)<< "call " << $1 << ", " << *$$.place << "\n";
-                    string tmp = $1;
-                    checks(tmp);
+                    string temp = $1;
+                    checks(temp);
                 };
 
 termsss:        expression termssss {
@@ -647,17 +647,17 @@ termssss:        COMMA termsss {
 var:            IDENT vars {
                     $$.code = $2.code;
                     $$.type = $2.type;
-                    string tmp = $1;
-                    checks(tmp);
-                    if(check(tmp) && var_map[tmp].type != $2.type){
+                    string temp = $1;
+                    checks(temp);
+                    if(check(temp) && var_map[temp].type != $2.type){
                         if($2.type == INT_ARR)
                         {
-                            string output ="Error: used variable \"" + tmp + "\" is not an array.";
+                            string output ="Error: used variable \"" + temp + "\" is not an array.";
                             yyerror(output.c_str());
                         }
                         else if($2.type == INT)
                         {
-                            string output ="Error: used array variable \"" + tmp + "\" is missing a specified index.";
+                            string output ="Error: used array variable \"" + temp + "\" is missing a specified index.";
                             yyerror(output.c_str());
                         }
                     }
@@ -671,9 +671,9 @@ var:            IDENT vars {
                     {
                         $$.index = $2.index;
                         $$.place = new_string();
-                        string* tmp = new string();
-                        *tmp = $1;
-                        *($$.code) << declaration_string($$.place) << print_code($$.place, "=[]", tmp,$2.index);
+                        string* temp = new string();
+                        *temp = $1;
+                        *($$.code) << declaration_string($$.place) << print_code($$.place, "=[]", temp,$2.index);
                         $$.value = new string();
                         *$$.value = $1;
                     }
@@ -767,8 +767,8 @@ void push(string name, Var v) {
     }
     else
     {
-        string tmp = "ERROR: " + name + " already exists";
-        yyerror(tmp.c_str());
+        string temp = "Error: " + name + " already exists";
+        yyerror(temp.c_str());
     }
 }
 bool check(string name) {
@@ -779,8 +779,8 @@ bool check(string name) {
 }
 void checks(string name) {
     if(!check(name)){
-        string tmp = "ERROR: \"" + name + "\" does not exist";
-        yyerror(tmp.c_str());
+        string temp = "Error: \"" + name + "\" does not exist";
+        yyerror(temp.c_str());
     }
 }
 
