@@ -59,7 +59,7 @@ stack<Loop> loop_stack;
 
 
 %type <NonTerminal> prog_start
-%type <Terminal> declarations statements function functions functions_1 declaration declaration_2 declaration_3 statement  statement_1 statement_2   
+%type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement statement_2   
 statement_21 statement_3   statement_4   statement_5   statement_51  statement_6   statement_61  bool_exp      bool_exp2     rel_and_exp   
 rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        
 term_3        term_31       term_32       var           var_2         b_loop 
@@ -145,7 +145,7 @@ statements:  statement SEMICOLON statements {
               }
             ;
 
-declaration:    IDENT declaration_2 {
+declaration:    IDENT declarations_1 {
                     $$.code = $2.code;
                     $$.type = $2.type;
                     $$.length = $2.length;
@@ -188,7 +188,7 @@ declaration:    IDENT declaration_2 {
                 }
                 ;
 
-declaration_2:  COMMA IDENT declaration_2 {
+declarations_1:  COMMA IDENT declarations_1 {
                     $$.code = $3.code;
                     $$.type = $3.type;
                     $$.length = $3.length;
@@ -222,7 +222,7 @@ declaration_2:  COMMA IDENT declaration_2 {
                         }
                     }
                 }
-                | COLON declaration_3 INTEGER {
+                | COLON declarations_2 INTEGER {
                     $$.code = $2.code;
                     $$.type = $2.type;
                     $$.length = $2.length;
@@ -230,7 +230,7 @@ declaration_2:  COMMA IDENT declaration_2 {
                 }
                 ;
 
-declaration_3:  ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF{
+declarations_2:  ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF{
                     $$.code = new stringstream();
                     $$.vars = new vector<Var>();
                     $$.type = INT_ARR;
@@ -244,8 +244,26 @@ declaration_3:  ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF{
                   }
                 ;
 
-statement:      statement_1 {
+statement:          var ASSIGN expression{
                     $$.code = $1.code;
+                    *($$.code) << $3.code->str();
+                    if($1.type == INT && $3.type == INT){
+                       *($$.code) << "= " << *$1.place << ", " << *$3.place << "\n";
+                    }
+                    else if($1.type == INT && $3.type == INT_ARR){
+                        *($$.code) << gen_code($1.place, "=[]", $3.place, $3.index);
+                    }
+                    else if($1.type == INT_ARR && $3.type == INT && $1.value != NULL){
+                        *($$.code) << gen_code($1.value, "[]=", $1.index, $3.place);
+                    }
+                    else if($1.type == INT_ARR && $3.type == INT_ARR){
+                        string *tmp = new_temp();
+                        *($$.code) << dec_temp(tmp) << gen_code(tmp, "=[]", $3.place, $3.index);
+                        *($$.code) << gen_code($1.value, "[]=", $1.index, tmp);
+                    }
+                    else{
+                        yyerror("Error: expression is null.");
+                    }
                 }
                 | statement_2 {
                     $$.code = $1.code;
@@ -277,29 +295,6 @@ statement:      statement_1 {
                     $$.place = $2.place;
                     *($$.code) << "ret " << *$$.place << "\n";
                 }
-
-statement_1:    var ASSIGN expression{
-                    $$.code = $1.code;
-                    *($$.code) << $3.code->str();
-                    if($1.type == INT && $3.type == INT){
-                       *($$.code) << "= " << *$1.place << ", " << *$3.place << "\n";
-                    }
-                    else if($1.type == INT && $3.type == INT_ARR){
-                        *($$.code) << gen_code($1.place, "=[]", $3.place, $3.index);
-                    }
-                    else if($1.type == INT_ARR && $3.type == INT && $1.value != NULL){
-                        *($$.code) << gen_code($1.value, "[]=", $1.index, $3.place);
-                    }
-                    else if($1.type == INT_ARR && $3.type == INT_ARR){
-                        string *tmp = new_temp();
-                        *($$.code) << dec_temp(tmp) << gen_code(tmp, "=[]", $3.place, $3.index);
-                        *($$.code) << gen_code($1.value, "[]=", $1.index, tmp);
-                    }
-                    else{
-                        yyerror("Error: expression is null.");
-                    }
-                }
-                ;
 
 statement_2:    IF bool_exp THEN statements statement_21 ENDIF{
                     $$.code = new stringstream();
