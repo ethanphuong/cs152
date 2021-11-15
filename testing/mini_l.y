@@ -788,7 +788,7 @@ bool check(string name) {
     return true;
 }
 void checks(string name) {
-    if(!check_map(name)){
+    if(!check(name)){
         string tmp = "ERROR: \"" + name + "\" does not exist";
         yyerror(tmp.c_str());
     }
