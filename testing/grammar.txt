@@ -1,0 +1,53 @@
+prog_start -> functions
+functions -> function functions
+            | epsilon
+function -> FUNCTION identifier SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY
+declaration -> identifiers COLON INTEGER
+            | identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
+declarations -> declaration SEMICOLON declarations
+            | epsilon
+statement -> var ASSIGN expression
+            | IF bool_exp THEN statements ENDIF
+            | IF bool_exp THEN statements ELSE statements ENDIF
+            | WHILE bool_exp BEGINLOOP statements ENDLOOP
+            | DO BEGINLOOP statements ENDLOOP WHILE bool_exp
+            | FOR var ASSIGN NUMBER SEMICOLON bool_exp SEMICOLON var ASSIGN expression BEGINLOOP statements ENDLOOP
+            | READ vars
+            | WRITE vars
+            | CONTINUE
+            | RETURN expression
+statements -> statement SEMICOLON statements
+            | epsilon
+bool_exp -> relation_and_exp OR relation_and_exp
+            | relation_and_exp
+relation_and_exp -> relation_exp AND relation_exp
+            | relation_exp
+relation_exp -> nots expression comp expression
+            | TRUE
+            | FALSE
+            | L_PAREN bool_exp R_PAREN
+nots -> NOT
+            | epsilon
+comp ->  EQ | NEQ | LT | GT | LTE | GTE
+expression -> multiplicative_expression
+            | multiplicative_expression ADD multiplicative_expression
+            | multiplicative_expression SUB multiplicative_expression
+multiplicative_expression -> term
+            | term MULT term
+            | term DIV term
+            | term MOD term
+term -> NEG term_num
+            | term_num
+            | identifier L_PAREN expressions R_PAREN
+term_num -> var
+            | number
+            | L_PAREN expression R_PAREN
+vars -> var | var COMMA vars
+var -> identifier L_SQUARE_BRACKET expression R_SQUARE_BRACKET
+            | identifier
+identifier -> IDENT
+number-> NUMBER
+expressions-> expression COMMA expressions
+            | expression
+            | epsilon
+identifiers -> identifier COMMA identifiers | IDENT
