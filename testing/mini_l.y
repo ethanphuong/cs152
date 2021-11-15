@@ -17,7 +17,7 @@ string * new_label();
 string go_to(string *s);
 string declaration_label(string *s);
 string declaration_string(string *s);
-void expression_code( Terminal &DD,  Terminal D2, Terminal D3,string op);
+void expression_code( secondStruct &DD,  secondStruct D2, secondStruct D3,string op);
 bool success = true;
 bool no_main = false;
 void push_map(string name, Var v);
@@ -35,9 +35,9 @@ stack<Loop> loop_stack;
 
     struct {
         stringstream *code;
-    }NonTerminal;
+    } firstStruct;
 
-    struct Terminal Terminal;
+    struct secondStruct secondStruct;
 }
 
 %error-verbose
@@ -47,8 +47,8 @@ stack<Loop> loop_stack;
 %type <number> NUMBER
 %type <buf> IDENT
 
-%type <NonTerminal> prog_start
-%type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement assi_expr read_vars write_vars bool_expr  
+%type <firstStruct> prog_start
+%type <secondStruct> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement assi_expr read_vars write_vars bool_expr  
 bool_expr_continue rel_expr rel_expr_continute rel_exprs rel_exprs_continue comp expression expressions  mult_expr mult_exprs term terms termss termsss termssss var vars         enter_loop
 
 %%
@@ -700,7 +700,7 @@ string * new_label(){
     return t;
 }
                    
-void expression_code( Terminal &DD, Terminal D2, Terminal D3, string op){
+void expression_code( secondStruct &DD, secondStruct D2, secondStruct D3, string op){
     DD.code = D2.code;
     *(DD.code) << D3.code->str();
     if(D3.op == NULL){
