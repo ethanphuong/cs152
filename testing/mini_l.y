@@ -59,8 +59,7 @@ stack<Loop> loop_stack;
 
 
 %type <NonTerminal> prog_start
-%type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement   
-statement_21 statement_51  statement_61  bool_exp      bool_exp2     rel_and_exp   
+%type <Terminal> declarations statements function functions functions_1 declaration declarations_1 declarations_2 statement    statement_51  statement_61  bool_exp      bool_exp2     rel_and_exp   
 rel_and_exp2  relation_exp   relation_exp_s comp          expression    expression_2  mult_expr     mult_expr_2   term          term_2        
 term_3        term_31       term_32       var           var_2         b_loop 
 
@@ -265,7 +264,7 @@ statement:          var ASSIGN expression{
                         yyerror("Error: expression is null.");
                     }
                 }
-                | IF bool_exp THEN statements statement_21 ENDIF{
+                | IF bool_exp THEN statements ENDIF{
                     $$.code = new stringstream();
                     $$.begin = new_label();
                     $$.end = new_label();
@@ -333,16 +332,6 @@ statement:          var ASSIGN expression{
                     $$.place = $2.place;
                     *($$.code) << "ret " << *$$.place << "\n";
                 }
-
-statement_21:   {
-                    $$.code = new stringstream();
-                    $$.begin = NULL;
-                }
-                | ELSE statements{
-                    $$.code = $2.code;
-                    $$.begin = new_label();
-                }
-                ;
 
 b_loop:         {
                     $$.code = new stringstream();
