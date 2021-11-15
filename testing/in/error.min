@@ -1,0 +1,28 @@
+## no main decl
+function mains;
+beginparams
+endparams
+beginlocals
+    n : integer;
+    r : array [10] of integer;
+    ## defined twice
+    n : array [10] of integer;
+    y : integer;
+    na : array [0] of integer;
+    ## dec same as if
+    ## continue : integer;
+endlocals
+beginbody
+    read n;
+    ## not declared
+    n := z + 1;
+    ## r not int
+    n := n + r;
+    ## n not array
+    y := n[y];
+    write n;
+    ## no loop
+    continue;
+    ## no func def
+    ## fib(n);
+endbody
