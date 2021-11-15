@@ -1,0 +1,47 @@
+prog_start -> epsilon
+            | functions
+functions -> function functions
+            | epsilon
+function -> FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY declarations END_BODY
+declaration -> identifiers COLON INTEGER
+            | identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
+declarations -> declaration SEMICOLON declarations
+            | epsilon
+statement -> var ASSIGN expression
+            | IF bool_exp THEN statements ENDIF
+            | IF bool_exp THEN statements ELSE statements ENDIF
+            | WHILE bool_exp BEGINLOOP statements ENDLOOP
+            | DO BEGINLOOP statements ENDLOOP WHILE bool_exp
+            | FOR var ASSIGN NUMBER SEMICOLON bool_exp SEMICOLON var ASSIGN expression BEGINLOOP statements ENDLOOP
+            | READ vars
+            | WRITE vars
+            | CONTINUE
+            | RETURN expression
+statements -> statement SEMICOLON statements
+            | epsilon
+bool_exp -> relation_and_exp OR relation_and_exp
+            | relation_and_exp
+relation_and_exp -> relation_exp AND relation_exp
+            | relation_exp
+relation_exp_not -> NOT relation_exp
+            | relation_exp
+relation_exp -> expression comp expression
+            | TRUE
+            | FALSE
+            | L_PAREN bool_exp R_PAREN
+comp ->  EQ | NEQ | LT | GT | LTE | GTE
+expression -> multiplicative_expression
+            | multiplicative_expression ADD multiplicative_expression
+            | multiplicative_expression SUB multiplicative_expression
+multiplicative_expression -> term
+            | term MULT term
+            | term DIV term
+            | term MOD term
+term -> NEG term_num
+            | term_num
+            | IDENT L_PAREN expressions R_PAREN
+term_num -> var | NUMBER | L_PAREN expression R_PAREN
+vars -> var | var COMMA vars
+var -> ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET
+            | ident
+identifiers -> IDENT COMMA identifiers | IDENT

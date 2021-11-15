@@ -1,0 +1,460 @@
+Useless nonterminals
+
+   statement
+   statements
+   bool_exp
+   relation_and_exp
+   relation_exp
+   comp
+   expression
+   multiplicative_expression
+   term
+   term_num
+   vars
+   var
+   expressions
+
+
+Terminals which are not used
+
+   ASSIGN
+   IF
+   THEN
+   ENDIF
+   ELSE
+   BEGINLOOP
+   ENDLOOP
+   WHILE
+   READ
+   WRITE
+   CONTINUE
+   RETURN
+   OR
+   AND
+   L_PAREN
+   R_PAREN
+   TRUE
+   FALSE
+   LT
+   GT
+   NEQ
+   LTE
+   GTE
+   ADD
+   SUB
+   DIV
+   MULT
+   MOD
+   NEG
+   EQ
+   FOR
+   DO
+
+
+Useless rules
+
+   11 statement: var ASSIGN expression
+   12          | IF bool_exp THEN statements ENDIF
+   13          | IF bool_exp THEN statements ELSE statements ENDIF
+   14          | WHILE bool_exp BEGINLOOP statements ENDLOOP
+   15          | DO BEGINLOOP statements ENDLOOP WHILE bool_exp
+   16          | FOR var ASSIGN NUMBER SEMICOLON bool_exp SEMICOLON var ASSIGN expression BEGINLOOP statements ENDLOOP
+   17          | READ vars
+   18          | WRITE vars
+   19          | CONTINUE
+   20          | RETURN expression
+
+   21 statements: statement SEMICOLON statements
+   22           | /* empty */
+
+   23 bool_exp: relation_and_exp OR relation_and_exp
+   24         | relation_and_exp
+
+   25 relation_and_exp: relation_exp AND relation_exp
+   26                 | relation_exp
+
+   27 relation_exp: expression comp expression
+   28             | TRUE
+   29             | FALSE
+   30             | L_PAREN bool_exp R_PAREN
+
+   31 comp: EQ
+   32     | NEQ
+   33     | LT
+   34     | GT
+   35     | LTE
+   36     | GTE
+
+   37 expression: multiplicative_expression
+   38           | multiplicative_expression ADD multiplicative_expression
+   39           | multiplicative_expression SUB multiplicative_expression
+
+   40 multiplicative_expression: term
+   41                          | term MULT term
+   42                          | term DIV term
+   43                          | term MOD term
+
+   44 term: NEG term_num
+   45     | term_num
+   46     | IDENT L_PAREN expressions R_PAREN
+
+   47 term_num: var
+   48         | NUMBER
+   49         | L_PAREN expression R_PAREN
+
+   50 vars: var
+   51     | var COMMA vars
+
+   52 var: IDENT L_SQUARE_BRACKET expression R_SQUARE_BRACKET
+   53    | IDENT
+
+   54 expressions: expression COMMA expressions
+   55            | expression
+   56            | /* empty */
+
+
+Grammar
+
+    0 $accept: prog_start $end
+
+    1 prog_start: functions
+
+    2 functions: function functions
+    3          | /* empty */
+
+    4 function: FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY
+
+    5 declaration: identifiers COLON INTEGER
+    6            | identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
+
+    7 declarations: declaration SEMICOLON declarations
+    8             | /* empty */
+
+    9 identifiers: IDENT COMMA identifiers
+   10            | IDENT
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+FUNCTION (258) 4
+IDENT (259) 4 9 10
+SEMICOLON (260) 4 7
+BEGIN_PARAMS (261) 4
+END_PARAMS (262) 4
+BEGIN_LOCALS (263) 4
+END_LOCALS (264) 4
+BEGIN_BODY (265) 4
+COLON (266) 5 6
+INTEGER (267) 5 6
+ARRAY (268) 6
+L_SQUARE_BRACKET (269) 6
+R_SQUARE_BRACKET (270) 6
+NUMBER (271) 6
+OF (272) 6
+ASSIGN (273)
+IF (274)
+THEN (275)
+ENDIF (276)
+ELSE (277)
+BEGINLOOP (278)
+ENDLOOP (279)
+WHILE (280)
+READ (281)
+WRITE (282)
+CONTINUE (283)
+RETURN (284)
+OR (285)
+AND (286)
+L_PAREN (287)
+R_PAREN (288)
+TRUE (289)
+FALSE (290)
+LT (291)
+GT (292)
+NEQ (293)
+LTE (294)
+GTE (295)
+ADD (296)
+SUB (297)
+DIV (298)
+MULT (299)
+MOD (300)
+NEG (301)
+COMMA (302) 9
+EQ (303)
+FOR (304)
+DO (305)
+
+
+Nonterminals, with rules where they appear
+
+$accept (51)
+    on left: 0
+prog_start (52)
+    on left: 1, on right: 0
+functions (53)
+    on left: 2 3, on right: 1 2
+function (54)
+    on left: 4, on right: 2
+declaration (55)
+    on left: 5 6, on right: 7
+declarations (56)
+    on left: 7 8, on right: 4 7
+identifiers (57)
+    on left: 9 10, on right: 5 6 9
+
+
+state 0
+
+    0 $accept: . prog_start $end
+
+    FUNCTION  shift, and go to state 1
+
+    $default  reduce using rule 3 (functions)
+
+    prog_start  go to state 2
+    functions   go to state 3
+    function    go to state 4
+
+
+state 1
+
+    4 function: FUNCTION . IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY
+
+    IDENT  shift, and go to state 5
+
+
+state 2
+
+    0 $accept: prog_start . $end
+
+    $end  shift, and go to state 6
+
+
+state 3
+
+    1 prog_start: functions .
+
+    $default  reduce using rule 1 (prog_start)
+
+
+state 4
+
+    2 functions: function . functions
+
+    FUNCTION  shift, and go to state 1
+
+    $default  reduce using rule 3 (functions)
+
+    functions  go to state 7
+    function   go to state 4
+
+
+state 5
+
+    4 function: FUNCTION IDENT . SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY
+
+    SEMICOLON  shift, and go to state 8
+
+
+state 6
+
+    0 $accept: prog_start $end .
+
+    $default  accept
+
+
+state 7
+
+    2 functions: function functions .
+
+    $default  reduce using rule 2 (functions)
+
+
+state 8
+
+    4 function: FUNCTION IDENT SEMICOLON . BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY
+
+    BEGIN_PARAMS  shift, and go to state 9
+
+
+state 9
+
+    4 function: FUNCTION IDENT SEMICOLON BEGIN_PARAMS . declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY
+
+    IDENT  shift, and go to state 10
+
+    $default  reduce using rule 8 (declarations)
+
+    declaration   go to state 11
+    declarations  go to state 12
+    identifiers   go to state 13
+
+
+state 10
+
+    9 identifiers: IDENT . COMMA identifiers
+   10            | IDENT .
+
+    COMMA  shift, and go to state 14
+
+    $default  reduce using rule 10 (identifiers)
+
+
+state 11
+
+    7 declarations: declaration . SEMICOLON declarations
+
+    SEMICOLON  shift, and go to state 15
+
+
+state 12
+
+    4 function: FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations . END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY
+
+    END_PARAMS  shift, and go to state 16
+
+
+state 13
+
+    5 declaration: identifiers . COLON INTEGER
+    6            | identifiers . COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
+
+    COLON  shift, and go to state 17
+
+
+state 14
+
+    9 identifiers: IDENT COMMA . identifiers
+
+    IDENT  shift, and go to state 10
+
+    identifiers  go to state 18
+
+
+state 15
+
+    7 declarations: declaration SEMICOLON . declarations
+
+    IDENT  shift, and go to state 10
+
+    $default  reduce using rule 8 (declarations)
+
+    declaration   go to state 11
+    declarations  go to state 19
+    identifiers   go to state 13
+
+
+state 16
+
+    4 function: FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS . BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY
+
+    BEGIN_LOCALS  shift, and go to state 20
+
+
+state 17
+
+    5 declaration: identifiers COLON . INTEGER
+    6            | identifiers COLON . ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
+
+    INTEGER  shift, and go to state 21
+    ARRAY    shift, and go to state 22
+
+
+state 18
+
+    9 identifiers: IDENT COMMA identifiers .
+
+    $default  reduce using rule 9 (identifiers)
+
+
+state 19
+
+    7 declarations: declaration SEMICOLON declarations .
+
+    $default  reduce using rule 7 (declarations)
+
+
+state 20
+
+    4 function: FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS . declarations END_LOCALS BEGIN_BODY
+
+    IDENT  shift, and go to state 10
+
+    $default  reduce using rule 8 (declarations)
+
+    declaration   go to state 11
+    declarations  go to state 23
+    identifiers   go to state 13
+
+
+state 21
+
+    5 declaration: identifiers COLON INTEGER .
+
+    $default  reduce using rule 5 (declaration)
+
+
+state 22
+
+    6 declaration: identifiers COLON ARRAY . L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
+
+    L_SQUARE_BRACKET  shift, and go to state 24
+
+
+state 23
+
+    4 function: FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations . END_LOCALS BEGIN_BODY
+
+    END_LOCALS  shift, and go to state 25
+
+
+state 24
+
+    6 declaration: identifiers COLON ARRAY L_SQUARE_BRACKET . NUMBER R_SQUARE_BRACKET OF INTEGER
+
+    NUMBER  shift, and go to state 26
+
+
+state 25
+
+    4 function: FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS . BEGIN_BODY
+
+    BEGIN_BODY  shift, and go to state 27
+
+
+state 26
+
+    6 declaration: identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER . R_SQUARE_BRACKET OF INTEGER
+
+    R_SQUARE_BRACKET  shift, and go to state 28
+
+
+state 27
+
+    4 function: FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY .
+
+    $default  reduce using rule 4 (function)
+
+
+state 28
+
+    6 declaration: identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET . OF INTEGER
+
+    OF  shift, and go to state 29
+
+
+state 29
+
+    6 declaration: identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF . INTEGER
+
+    INTEGER  shift, and go to state 30
+
+
+state 30
+
+    6 declaration: identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER .
+
+    $default  reduce using rule 6 (declaration)
