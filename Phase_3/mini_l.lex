@@ -1,9 +1,9 @@
 DIGIT		    [0-9]
-LETTER  	    [a-zA-Z]
-IDENT_VAR	    {LETTER}({LETTER}|{DIGIT}|[_])*(({LETTER}|{DIGIT})+)*
-IDENT_DIG	    {DIGIT}+
-IDENT_ERR_START ({DIGIT}|[_])({LETTER}|{DIGIT}|[_])*(({LETTER}|{DIGIT})+)*
-IDENT_ERR_END	{LETTER}({LETTER}|{DIGIT}|[_])*([_])+
+LETTERS  	    [a-zA-Z]
+IDENT_VARIABLE	{LETTERS}({LETTERS}|{DIGIT}|[_])*(({LETTERS}|{DIGIT})+)*
+IDENT_DIGIT	    {DIGIT}+
+IDENT_ERROR_BEGIN ({DIGIT}|[_])({LETTERS}|{DIGIT}|[_])*(({LETTERS}|{DIGIT})+)*
+IDENT_ERROR_END	{LETTERS}({LETTERS}|{DIGIT}|[_])*([_])+
 
 %{
 #include "mini_l.h"
@@ -68,10 +68,10 @@ int currPos = 1;
 "\n"+ {currLine++; currPos = 1;}
 (##).* {currLine++; currPos = 1;}
 
-{IDENT_DIG}	        /*printf("NUMBER -> %s\n",yytext)*/;yylval.number = atoi(yytext); return(NUMBER); currPos += yyleng; 
-{IDENT_ERR_START}   printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n",currLine,currPos,yytext);exit(0);
-{IDENT_ERR_END}	    printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n",currLine,currPos,yytext);exit(0);
-{IDENT_VAR}	        /*printf("IDENT -> %s\n",yytext)*/;strcpy(yylval.buf,yytext);return(IDENT);currPos += yyleng;  
+{IDENT_VARIABLE}	        /*printf("IDENT -> %s\n",yytext)*/;strcpy(yylval.buf,yytext);return(IDENT);currPos += yyleng;  
+{IDENT_DIGIT}	        /*printf("NUMBER -> %s\n",yytext)*/;yylval.number = atoi(yytext); return(NUMBER); currPos += yyleng; 
+{IDENT_ERROR_BEGIN}   printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n",currLine,currPos,yytext);exit(0);
+{IDENT_ERROR_END}	    printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n",currLine,currPos,yytext);exit(0);
 .		            printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n",currLine,currPos,yytext);exit(0);
 %%
 /*
