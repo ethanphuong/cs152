@@ -16,7 +16,7 @@ string go_to(string *s);
 string declaration_label(string *s);
 string declaration_string(string *s);
 void code(secondStruct &first, secondStruct second, secondStruct third, string op);
-void push(string name, Var v);
+void push(string name, Var var);
 void checks(string name);
 bool check(string name);
 ;
@@ -133,11 +133,11 @@ declaration:    IDENT declarations_1 {
                     $$.length = $2.length;
 
                     $$.vars = $2.vars;
-                    Var v = Var();
-                    v.type = $2.type;
-                    v.length = $2.length;
-                    v.place = new string();
-                    *v.place = $1;
+                    Var var = Var();
+                    var.type = $2.type;
+                    var.length = $2.length;
+                    var.place = new string();
+                    *var.place = $1;
                     $$.vars->push_back(v);
                     
                     if($2.type == INT_ARR)
@@ -182,10 +182,10 @@ declarations_1:  COMMA IDENT declarations_1 {
                     $$.type = $3.type;
                     $$.length = $3.length;
                     $$.vars = $3.vars;
-                    Var v = Var();
-                    v.type = $3.type;
-                    v.length = $3.length;
-                    v.place = new string();
+                    Var var = Var();
+                    var.type = $3.type;
+                    var.length = $3.length;
+                    var.place = new string();
                     *v.place = $2;
                     $$.vars->push_back(v);
                     if($3.type == INT_ARR)
