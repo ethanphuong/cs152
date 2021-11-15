@@ -73,10 +73,10 @@ false		        return(FALSE);cursor_pos += yyleng;
 \]		            return(R_SQUARE_BRACKET);cursor_pos += yyleng;
 \:\=		        return(ASSIGN);cursor_pos += yyleng;
 return              return(RETURN);cursor_pos += yyleng;
-{IDENT_DIG}	        /*printf("NUMBER -> %s\n",yytext)*/;yylval.int_val = atoi(yytext); return(NUMBER); cursor_pos += yyleng; 
+{IDENT_DIG}	        /*printf("NUMBER -> %s\n",yytext)*/;yylval.number = atoi(yytext); return(NUMBER); cursor_pos += yyleng; 
 {IDENT_ERR_START}   printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n",line_cnt,cursor_pos,yytext);exit(0);
 {IDENT_ERR_END}	    printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n",line_cnt,cursor_pos,yytext);exit(0);
-{IDENT_VAR}	        /*printf("IDENT -> %s\n",yytext)*/;strcpy(yylval.str_val,yytext);return(IDENT);cursor_pos += yyleng;  
+{IDENT_VAR}	        /*printf("IDENT -> %s\n",yytext)*/;strcpy(yylval.buf,yytext);return(IDENT);cursor_pos += yyleng;  
 .		            printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n",line_cnt,cursor_pos,yytext);exit(0);
 %%
 
