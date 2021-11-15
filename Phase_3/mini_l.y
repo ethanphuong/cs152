@@ -149,7 +149,7 @@ declaration:    IDENT declarations_1 {
                         *($$.code) << ".[] " << $1 << ", " << $2.length << "\n";
                         string s = $1;
                         if(!check(s)){
-                            push(s,v);
+                            push(s,var);
                         }
                         else{
                             string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
@@ -163,7 +163,7 @@ declaration:    IDENT declarations_1 {
                         string s = $1;
                         if(!check(s))
                         {
-                            push(s,v);
+                            push(s,var);
                         }
                         else
                         {
@@ -187,14 +187,14 @@ declarations_1:  COMMA IDENT declarations_1 {
                     var.length = $3.length;
                     var.place = new string();
                     *var.place = $2;
-                    $$.vars->push_back(v);
+                    $$.vars->push_back(var);
                     if($3.type == INT_ARR)
                     {
                         *($$.code) << ".[] " << $2 << ", " << $3.length << "\n";
                         string s = $2;
                         if(!check(s))
                         {
-                            push(s,v);
+                            push(s,var);
                         }
                         else
                         {
@@ -208,7 +208,7 @@ declarations_1:  COMMA IDENT declarations_1 {
                         string s = $2;
                         if(!check(s))
                         {
-                            push(s,v);
+                            push(s,var);
                         }
                         else{
                             string tmp = "Error: Symbol \"" + s + "\" is multiply-defined";
