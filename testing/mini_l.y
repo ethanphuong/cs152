@@ -681,7 +681,7 @@ void expression_code( Terminal &DD, Terminal D2, Terminal D3, string op){
         *DD.op = op;
     }
     else{
-        DD.place = new_temp();
+        DD.place = new_string();
         DD.op = new string();
         *DD.op = op;
 
