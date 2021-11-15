@@ -2,21 +2,7 @@
 /* calc.y */
 
 %{
-#define YY_NO_UNPUT
-
-#include <iostream>
-
-#include <vector>
-#include <stack>
-#include <map>
-#include <sstream>
-#include <fstream>
-#include <stdio.h>
-#include <string>
-
-using namespace std;
-
-enum Type {INT,INT_ARR,FUNC};
+#include "mini_l.h"
 
 int yyerror(const char* s);
 int yylex(void);
@@ -55,45 +41,6 @@ stack<Loop> loop_stack;
     }NonTerminal;
 
     struct Terminal Terminal;
-
-    struct Var{
-        
-        string *place;
-        string *value;
-        string *offset;
-        //vector
-        Type type;
-        int length;
-        string *index;
-    } ;
-
-    struct Loop{
-        string *begin;
-        string *parent;
-        string *end;
-    };
-
-
-    struct Terminal{
-       stringstream *code;
-       //location
-       string *place;
-       string *value;
-       string *offset;
-       // branches
-       string *op;
-       string *begin;
-       string *parent;
-       string *end;
-       // type
-       //uint val;
-       Type type;
-       int length;
-       string *index;
-       // idents and vars
-       vector<string> *ids;
-       vector<Var> *vars; 
-    };
 }
 
 %error-verbose
