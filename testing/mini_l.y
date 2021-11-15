@@ -30,13 +30,6 @@ stack<Loop> loop_stack;
 {
     int number;
     char buf[4096];
-
-    struct 
-    {
-        stringstream *code;
-    } firstStruct;
-
-    struct secondStruct secondStruct;
 }
 
 %error-verbose
