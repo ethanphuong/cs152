@@ -39,7 +39,7 @@ enum Type {INT,INT_ARR,FUNC};
     };
 
 
-    struct Terminal{
+    struct SecondStruct{
        stringstream *code;
        //location
        string *place;
