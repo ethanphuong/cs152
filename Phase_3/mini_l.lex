@@ -1,18 +1,17 @@
-DIGIT [0-9] 
-LETTERS [a-zA-Z]
-IDENT_VAR	    {LETTERS}({LETTERS}|{DIGIT}|[_])*(({LETTERS}|{DIGIT})+)*
+DIGIT		    [0-9]
+LETTER  	    [a-zA-Z]
+IDENT_VAR	    {LETTER}({LETTER}|{DIGIT}|[_])*(({LETTER}|{DIGIT})+)*
 IDENT_DIG	    {DIGIT}+
-IDENT_ERR_START ({DIGIT}|[_])({LETTERS}|{DIGIT}|[_])*(({LETTERS}|{DIGIT})+)*
-IDENT_ERR_END	{LETTERS}({LETTERS}|{DIGIT}|[_])*([_])+
+IDENT_ERR_START ({DIGIT}|[_])({LETTER}|{DIGIT}|[_])*(({LETTER}|{DIGIT})+)*
+IDENT_ERR_END	{LETTER}({LETTER}|{DIGIT}|[_])*([_])+
 
 %{
-#include "y.tab.h"
 #include "mini_l.h"
+#include "y.tab.h"
 #include <string.h>
 
-int currPos = 1;
 int currLine = 1;
-
+int currPos = 1;
 %}
 
 %%
@@ -69,11 +68,10 @@ int currLine = 1;
 "\n"+ {currLine++; currPos = 1;}
 (##).* {currLine++; currPos = 1;}
 
-{DIGIT}+ {currPos += yyleng; return NUMBER;}
-{IDENT_DIG}	        yylval.number = atoi(yytext); return(NUMBER); currPos += yyleng; 
+{IDENT_DIG}	        /*printf("NUMBER -> %s\n",yytext)*/;yylval.number = atoi(yytext); return(NUMBER); currPos += yyleng; 
 {IDENT_ERR_START}   printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n",currLine,currPos,yytext);exit(0);
 {IDENT_ERR_END}	    printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n",currLine,currPos,yytext);exit(0);
-{IDENT_VAR}	        strcpy(yylval.buf,yytext);return(IDENT);currPos += yyleng;  
+{IDENT_VAR}	        /*printf("IDENT -> %s\n",yytext)*/;strcpy(yylval.buf,yytext);return(IDENT);currPos += yyleng;  
 .		            printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n",currLine,currPos,yytext);exit(0);
 %%
 /*
