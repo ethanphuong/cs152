@@ -1,8 +1,9 @@
 DIGIT [0-9] 
-IDENT_VAR	    {a-zA-Z0-9_}({a-zA-Z0-9_}|{DIGIT}|[_])*(({a-zA-Z0-9_}|{DIGIT})+)*
+LETTERS [a-zA-Z]
+IDENT_VAR	    {LETTERS}({LETTERS}|{DIGIT}|[_])*(({LETTERS}|{DIGIT})+)*
 IDENT_DIG	    {DIGIT}+
-IDENT_ERR_START ({DIGIT}|[_])({a-zA-Z0-9_}|{DIGIT}|[_])*(({a-zA-Z0-9_}|{DIGIT})+)*
-IDENT_ERR_END	{a-zA-Z0-9_}({a-zA-Z0-9_}|{DIGIT}|[_])*([_])+
+IDENT_ERR_START ({DIGIT}|[_])({LETTERS}|{DIGIT}|[_])*(({LETTERS}|{DIGIT})+)*
+IDENT_ERR_END	{LETTERS}({LETTERS}|{DIGIT}|[_])*([_])+
 
 %{
 #include "y.tab.h"
@@ -69,17 +70,11 @@ int currLine = 1;
 (##).* {currLine++; currPos = 1;}
 
 {DIGIT}+ {currPos += yyleng; return NUMBER;}
-{IDENT_DIG}	        /*printf("NUMBER -> %s\n",yytext)*/;yylval.int_val = atoi(yytext); return(NUMBER); cursor_pos += yyleng; 
+{IDENT_DIG}	        yylval.number = atoi(yytext); return(NUMBER); cursor_pos += yyleng; 
 {IDENT_ERR_START}   printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n",line_cnt,cursor_pos,yytext);exit(0);
 {IDENT_ERR_END}	    printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n",line_cnt,cursor_pos,yytext);exit(0);
-{IDENT_VAR}	        /*printf("IDENT -> %s\n",yytext)*/;strcpy(yylval.str_val,yytext);return(IDENT);cursor_pos += yyleng;  
+{IDENT_VAR}	        strcpy(yylval.buf,yytext);return(IDENT);cursor_pos += yyleng;  
 .		            printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n",line_cnt,cursor_pos,yytext);exit(0);
-
-("_"[a-zA-Z0-9_]*)|({DIGIT}[a-zA-Z0-9_]*) {printf("Error at line %d, column %d: identifier \"%s\" must begin with a letter\n", currPos, currLine, yytext); exit(0);}
-([a-zA-Z0-9_]*"_") {printf("Error at line %d, column %d: identifier \"%s\" cannot end with an underscore\n", currPos, currLine, yytext); exit(0);}
-
-[a-zA-Z0-9_]*[a-zA-Z0-9]* {currPos += yyleng; return IDENT;}
-
 %%
 /*
 int main(int argc, char **argv) {
