@@ -9,8 +9,8 @@ int yylex(void);
 stringstream *mil_code;
 FILE *instream;
 string print_code(string *res, string op, string *val1, string *val2);
-string to_string(char* s);
-string to_string(int s);
+string char_string(char* s);
+string int_string(int s);
 int tempi = 0;
 int templ = 0;
 string * new_temp();
@@ -80,7 +80,7 @@ function:   FUNCTION functions SEMICOLON BEGIN_PARAMS declarations END_PARAMS BE
                         yyerror("Error: cannot pass arrays to function.");
                     }
                     else if((*$5.vars)[i].type == INT){
-                        *($$.code) << "= " << *((*$5.vars)[i].place) << ", " << "$"<< to_string(i) << "\n";
+                        *($$.code) << "= " << *((*$5.vars)[i].place) << ", " << "$"<< int_string(i) << "\n";
                     }else{
                         yyerror("Error: invalid type");
                     }
@@ -572,7 +572,7 @@ terms:         var{
                 | NUMBER{
                     $$.code = new stringstream();
                     $$.place = new string();
-                    *$$.place = to_string($1);
+                    *$$.place = int_string($1);
                   }
                 | L_PAREN expression R_PAREN{
                     $$.code = $2.code;
@@ -663,13 +663,13 @@ string print_code(string *res, string op, string *val1, string *val2){
     }
 }
 
-string to_string(char* s){
+string char_string(char* s){
     ostringstream c;
     c << s;
     return c.str();
 }
 
-string to_string(int s){
+string int_string(int s){
     ostringstream c;
     c << s;
     return c.str();
