@@ -1,3 +1,7 @@
 make 
 cat ".min" | parser 
 mil_run output.mil <<< "input"
+
+For fibonacci.min
+cat ".min" | parser
+mil_run fibonacci.min < tests/input.txt
