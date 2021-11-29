@@ -9,7 +9,7 @@ endlocals
 beginbody
 
   i := 0;
-  while i <= 10 beginloop
+  while i < 10 beginloop
     i := i + 1;
     write i;
   endloop;
